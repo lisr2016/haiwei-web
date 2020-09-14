@@ -62,43 +62,51 @@ export const constantRoutes = [
   },
 
   {
-    path: '/inspection',
+    path: '/inspect',
     component: Layout,
-    redirect: '/inspection/assign',
+    redirect: '/inspect/index',
     name: 'Inspection',
-    meta: { title: '巡检', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'assign',
-        name: 'Assign',
-        component: () => import('@/views/assign/index'),
-        meta: { title: '巡检指派', icon: 'table' }
-      },
-      {
-        path: 'track',
-        name: 'Track',
-        component: () => import('@/views/track/index'),
-        meta: { title: '巡检跟踪', icon: 'tree' }
-      },
-      {
-        path: 'template',
-        name: 'Template',
-        component: () => import('@/views/template/index'),
-        meta: { title: '巡检模版', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    redirect: '/form/index',
-    meta: { title: '设置', icon: 'el-icon-s-help' },
+    meta: { icon: 'el-icon-s-help' },
     children: [
       {
         path: 'index',
         name: 'Form',
-        component: () => import('@/views/form/index'),
+        component: () => import('@/views/inspect/index'),
+        meta: { title: '巡检', icon: 'form' }
+      }
+    ]
+    // children: [
+    //   {
+    //     path: 'assign',
+    //     name: 'Assign',
+    //     component: () => import('@/views/assign/index'),
+    //     meta: { title: '巡检指派', icon: 'table' }
+    //   },
+    //   {
+    //     path: 'track',
+    //     name: 'Track',
+    //     component: () => import('@/views/track/index'),
+    //     meta: { title: '巡检跟踪', icon: 'tree' }
+    //   },
+    //   {
+    //     path: 'template',
+    //     name: 'Template',
+    //     component: () => import('@/views/template/index'),
+    //     meta: { title: '巡检模版', icon: 'tree' }
+    //   }
+    // ]
+  },
+
+  {
+    path: '/userList',
+    component: Layout,
+    redirect: '/userList/index',
+    meta: { icon: 'el-icon-s-help' },
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/userList/index'),
         meta: { title: '用户', icon: 'form' }
       }
     ]
