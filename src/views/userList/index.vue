@@ -100,8 +100,7 @@ export default {
       this.listLoading = false
       const data = { offset: 1, limit: 50 }
       getList(data).then(response => {
-        console.log(response)
-        // this.list = response.data.items
+        this.list = response.data.list
         this.listLoading = false
       })
     },
