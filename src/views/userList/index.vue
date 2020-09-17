@@ -53,9 +53,10 @@
       <el-table-column
         fixed="right"
         label="操作"
-        width="100">
+        width="100"
+      >
         <template slot-scope="scope">
-          <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
+          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>
           <el-button type="text" size="small">编辑</el-button>
         </template>
       </el-table-column>
@@ -81,14 +82,7 @@ export default {
   data() {
     return {
       levelValues,
-      list: [
-        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
-        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
-        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
-        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
-        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
-        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
-      ],
+      list: [],
       listLoading: true,
     }
   },
