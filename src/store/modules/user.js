@@ -31,7 +31,6 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     const { phone, password } = userInfo
-    console.log({ phone, password })
     return new Promise((resolve, reject) => {
       login({ phone, password }).then(response => {
         const { data } = response
@@ -66,17 +65,10 @@ const actions = {
   },
 
   // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
-        commit('RESET_STATE')
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  logout({ commit }) {
+    removeToken() // must remove  token  first
+    resetRouter()
+    commit('RESET_STATE')
   },
 
   // remove token

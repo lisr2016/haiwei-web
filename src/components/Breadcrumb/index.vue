@@ -15,13 +15,13 @@ import pathToRegexp from 'path-to-regexp'
 export default {
   data() {
     return {
-      levelList: null
+      levelList: null,
     }
   },
   watch: {
     $route() {
       this.getBreadcrumb()
-    }
+    },
   },
   created() {
     this.getBreadcrumb()
@@ -33,7 +33,7 @@ export default {
       const first = matched[0]
 
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
+        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' } }].concat(matched)
       }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
@@ -58,21 +58,21 @@ export default {
         return
       }
       this.$router.push(this.pathCompile(path))
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss" scoped>
-.app-breadcrumb.el-breadcrumb {
-  display: inline-block;
-  font-size: 14px;
-  line-height: 50px;
-  margin-left: 8px;
+  .app-breadcrumb.el-breadcrumb {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 50px;
+    margin-left: 8px;
 
-  .no-redirect {
-    color: #97a8be;
-    cursor: text;
+    .no-redirect {
+      color: #97A8BE;
+      cursor: text;
+    }
   }
-}
 </style>
