@@ -6,13 +6,13 @@
         <h3 class="title">Login Form</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="phone">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
-          v-model="loginForm.username"
+          v-model="loginForm.phone"
           placeholder="Username"
           name="username"
           type="text"
@@ -53,16 +53,19 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+    const checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('手机号不能为空'))
       } else {
-        callback()
+        const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
+        if (reg.test(value)) {
+          callback()
+        } else {
+          return callback(new Error('请输入正确的手机号'))
+        }
       }
     }
     const validatePassword = (rule, value, callback) => {
@@ -74,11 +77,11 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
+        phone: '15093408313',
         password: '111111'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
@@ -89,6 +92,7 @@ export default {
   watch: {
     $route: {
       handler: function(route) {
+        console.log(route)
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
@@ -107,10 +111,13 @@ export default {
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
+        console.log(valid)
         if (valid) {
+          console.log('===')
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            console.log(this.redirect)
+            this.$router.push({ path: '/' })
             this.loading = false
           }).catch(() => {
             this.loading = false

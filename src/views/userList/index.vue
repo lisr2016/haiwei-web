@@ -1,5 +1,12 @@
 <template>
   <div class="app-container">
+    <div class="search-box">
+      <el-button>新增</el-button>
+      <div class="right">
+        <el-input placeholder="请输入搜索内容" />
+        <el-button>查找</el-button>
+      </div>
+    </div>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -10,33 +17,46 @@
     >
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
-          {{ scope.$index }}
+          {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="手机号">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.phone }}
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      <el-table-column label="机构名称" width="210" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.orgInfo.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
+      <el-table-column label="法人电话" width="110" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          {{ scope.row.orgInfo.managerPhone }}
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
+      <el-table-column class-name="status-col" label="地址" width="110" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+          {{ scope.row.orgInfo.address }}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
+      <el-table-column align="center" prop="created_at" label="级别" width="200">
         <template slot-scope="scope">
-          <i class="el-icon-time"/>
-          <span>{{ scope.row.display_time }}</span>
+          {{ levelValues[scope.row.orgInfo.level] }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="created_at" label="街道" width="200">
+        <template slot-scope="scope">
+          {{ scope.row.orgInfo.street }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        fixed="right"
+        label="操作"
+        width="100">
+        <template slot-scope="scope">
+          <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
+          <el-button type="text" size="small">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -46,21 +66,30 @@
 <script>
 import { getList } from '@/api/table'
 
+const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
         published: 'success',
         draft: 'gray',
-        deleted: 'danger'
+        deleted: 'danger',
       }
       return statusMap[status]
-    }
+    },
   },
   data() {
     return {
-      list: null,
-      listLoading: true
+      levelValues,
+      list: [
+        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
+        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
+        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
+        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
+        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
+        { phone: '15093408313', orgInfo: { name: '第三人民医院', managerPhone: '15093408313', level: '2', street: '高新区街道', address: '铭功路122号' } },
+      ],
+      listLoading: true,
     }
   },
   created() {
@@ -68,12 +97,39 @@ export default {
   },
   methods: {
     fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
+      this.listLoading = false
+      const data = { offset: 1, limit: 50 }
+      getList(data).then(response => {
+        console.log(response)
+        // this.list = response.data.items
         this.listLoading = false
       })
-    }
-  }
+    },
+    handleClick(row) {
+      console.log(row)
+    },
+  },
 }
 </script>
+<style lang="scss" scoped>
+  .search-box {
+    width: 100%;
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+
+    .right {
+      display: flex;
+
+      .el-input {
+        width: 300px;
+        margin-right: 10px;
+      }
+    }
+
+    .el-button {
+      width: 100px;
+    }
+
+  }
+</style>
