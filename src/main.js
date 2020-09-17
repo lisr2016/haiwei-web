@@ -11,6 +11,7 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
+import _ from 'lodash'
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -27,6 +28,9 @@ if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
+
+Vue.prototype._ = _
+Vue.prototype.$lo = _
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
