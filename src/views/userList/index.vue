@@ -2,6 +2,7 @@
   <div class="app-container">
     <div class="search-box">
       <el-button @click="dialogFormVisible = true">新增</el-button>
+      <el-button @click="download">下载</el-button>
       <div class="right">
         <el-input placeholder="请输入搜索内容" v-model="params.search" />
         <el-button @click="fetchData">查找</el-button>
@@ -211,6 +212,23 @@ export default {
   },
 
   methods: {
+    download() {
+      import('@/utils/excel').then(excel => {
+        const header = ['手机号', '机构名称', '法人电话', '地址', '负责人电话', '床位数', '级别', '街道']
+        const filterVal = ['phone', 'name', 'corporationPhone', 'address', 'managerPhone', 'bednum', 'level', 'street']
+        const data = this.formatJson(filterVal, this.list)
+        excel.export_json_to_excel({
+          header,
+          data,
+          filename: 'demo',
+          autoWidth: true,
+          bookType: 'xlsx',
+        })
+      })
+    },
+    formatJson(filterVal, data) {
+      return data.map(v => filterVal.map(j => v[j] ? v[j] : v.orgInfo[j]))
+    },
     handleSizeChange(val) {
       this.params.limit = val
       this.fetchData()
