@@ -21,6 +21,12 @@ service.interceptors.request.use(
       // please modify it according to the actual situation
       config.headers['token'] = getToken()
     }
+    if (config.method?.toLowerCase() === 'post') {
+      config.data = filterParams(config.data, true)
+    } else {
+      config.params = filterParams(config.params)
+    }
+
     return config
   },
   error => {
@@ -81,5 +87,27 @@ service.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+function filterParams (params, post) {
+  const entityType = ['number', 'boolean']
+
+  if (post) entityType.push('string')
+
+  if (entityType.includes(typeof params) || Array.isArray(params)) {
+    return params
+  }
+
+  if (typeof params === 'object' && params) {
+    const result = {}
+
+    Object.keys(params).forEach(key => {
+      if (params[key]) {
+        result[key] = params[key]
+      }
+    })
+
+    return result
+  }
+}
 
 export default service

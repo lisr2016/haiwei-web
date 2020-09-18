@@ -56,7 +56,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo().then(response => {
         const { data: { user } } = response
-        console.log(user)
         if (!user) {
           return reject('Verification failed, please Login again.')
         }

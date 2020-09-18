@@ -3,8 +3,8 @@
     <div class="search-box">
       <el-button @click="dialogFormVisible = true">新增</el-button>
       <div class="right">
-        <el-input placeholder="请输入搜索内容" />
-        <el-button>查找</el-button>
+        <el-input placeholder="请输入搜索内容" v-model="params.search" />
+        <el-button @click="fetchData">查找</el-button>
       </div>
     </div>
     <el-table
@@ -15,62 +15,72 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID" width="75">
+      <el-table-column align="center" label="ID">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="手机号" width="110">
+      <el-table-column label="手机号">
         <template slot-scope="scope">
-          {{ scope.row.phone || '待完善' }}
+          {{ scope.row.phone }}
         </template>
       </el-table-column>
-      <el-table-column label="机构名称" width="210" align="center">
+      <el-table-column label="机构名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.orgInfo.name || '待完善' }}</span>
+          <span>{{ scope.row.orgInfo.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="法人电话" width="110" align="center">
+      <el-table-column label="法人电话" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.corporationPhone || '待完善' }}
+          {{ scope.row.orgInfo.corporationPhone }}
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="地址" width="110" align="center">
+      <el-table-column class-name="status-col" label="地址" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.address || '待完善' }}
+          {{ scope.row.orgInfo.address }}
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="负责人电话" width="110" align="center">
+      <el-table-column class-name="status-col" label="负责人电话" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.managerPhone || '待完善' }}
+          {{ scope.row.orgInfo.managerPhone }}
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="床位数" width="110" align="center">
+      <el-table-column class-name="status-col" label="床位数" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.bednum || '待完善' }}
+          {{ scope.row.orgInfo.bednum }}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="级别" width="120">
+      <el-table-column align="center" prop="created_at" label="级别">
         <template slot-scope="scope">
-          {{ levelValues[scope.row.orgInfo.level] || '待完善' }}
+          {{ levelValues[scope.row.orgInfo.level] }}
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="街道" width="120">
+      <el-table-column align="center" prop="created_at" label="街道">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.street || '待完善' }}
+          {{ scope.row.orgInfo.street }}
         </template>
       </el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
-        width="100"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>
+<!--          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>-->
           <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
+
+    <el-pagination
+      style="margin-top: 20px;padding-left: 0"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="params.offset"
+      :page-sizes="[10, 20, 50, 100, 200]"
+      :page-size="10"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
 
 
     <!--  新增  -->
@@ -79,7 +89,7 @@
         <el-form-item label="用户手机" label-width="120px" prop="phone">
           <el-input v-model="addForm.phone" autocomplete="off" placeholder="请输入用户登录手机号" />
         </el-form-item>
-        <el-form-item label="用户密码" label-width="120px">
+        <el-form-item label="用户密码" label-width="120px" prop="password">
           <el-input v-model="addForm.password" autocomplete="off" placeholder="请输入用户登录密码" />
         </el-form-item>
         <el-form-item label="机构名称" label-width="120px" prop="organizationName">
@@ -94,12 +104,12 @@
 
     <!--  编辑  -->
     <el-dialog title="编辑" :visible.sync="editVisible">
-      <el-form :model="currentData" ref="editForm" :rules="editRules">
+      <el-form :model="currentData" ref="editForm" :rules="rules">
         <el-form-item label="机构名称:" label-width="120px">
           <span style="font-size: 14px">{{ currentData.name }}</span>
         </el-form-item>
-        <el-form-item label="法人电话:" label-width="120px">
-          <el-input v-model="currentData.corporationPhone" type="number" autocomplete="off" placeholder="请输入用户法人电话" />
+        <el-form-item label="法人电话:" label-width="120px" prop="corporationPhone">
+          <el-input v-model="currentData.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
         </el-form-item>
         <el-form-item label="负责人电话:" label-width="120px">
           <el-input v-model="currentData.managerPhone" type="number" autocomplete="off" placeholder="请输入负责人电话" />
@@ -110,7 +120,7 @@
         <el-form-item label="地址:" label-width="120px" prop="address">
           <el-input v-model="currentData.address" autocomplete="off" placeholder="请输入用户地址" />
         </el-form-item>
-        <el-form-item label="级别:" label-width="120px" prop="level">
+        <el-form-item label="级别:" label-width="120px" prop="levelText">
           <el-select v-model="currentData.levelText" placeholder="请选择用户级别">
             <el-option v-for="(item, index) in levelValues" :label="item" :value="index" :key="index" />
           </el-select>
@@ -137,7 +147,6 @@ const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家
 export default {
   data() {
     const checkPhone = (rule, value, callback) => {
-      console.log(value)
       if (!value) {
         return callback(new Error('手机号不能为空'))
       } else {
@@ -152,13 +161,19 @@ export default {
     return {
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        organizationName: { required: true, message: '机构名称不能为空'},
+        corporationPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
+        organizationName: [{ required: true, message: '机构名称不能为空'}],
+        password: [{ required: true, message: '登录密码不能为空'}],
+
+        street: [{ required: true, message: '请选择街道', trigger: 'change'}],
+        levelText: [{ required: true, message: '请选择级别', trigger: 'change'}],
+        address: [{ required: true, message: '请填写地址'}],
       },
-      editRules: {
-        tel: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        street: { required: true, message: '请选择街道', trigger: 'change'},
-        level: { required: true, message: '请选择级别', trigger: 'change'},
-        address: { required: true, message: '请填写地址'},
+      total: 0,
+      params: {
+        offset: 1,
+        limit: 10,
+        search: '',
       },
       levelValues,
       street,
@@ -177,7 +192,32 @@ export default {
   created() {
     this.fetchData()
   },
+  watch: {
+    dialogFormVisible: {
+      handler(val) {
+        if (!val) {
+          this.$refs.addForm.resetFields()
+        }
+      }
+    },
+    editVisible: {
+      handler(val) {
+        if (!val) {
+          this.$refs.editForm.resetFields()
+        }
+      }
+    },
+  },
+
   methods: {
+    handleSizeChange(val) {
+      this.params.limit = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.params.offset = val
+      this.fetchData()
+    },
     add() {
       this.$refs.addForm.validate(async (valid) => {
         if (valid) {
@@ -209,14 +249,11 @@ export default {
     },
     fetchData() {
       this.listLoading = false
-      const data = { offset: 1, limit: 50 }
-      getList(data).then(response => {
+      getList(this.params).then(response => {
         this.list = response.data.list
+        this.total = response.data.count
         this.listLoading = false
       })
-    },
-    handleClick(row) {
-      console.log(row)
     },
   },
 }
