@@ -15,7 +15,7 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID">
+      <el-table-column align="center">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
@@ -65,7 +65,7 @@
         label="操作"
       >
         <template slot-scope="scope">
-<!--          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>-->
+          <!--          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>-->
           <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
@@ -122,12 +122,12 @@
         </el-form-item>
         <el-form-item label="级别:" label-width="120px" prop="levelText">
           <el-select v-model="currentData.levelText" placeholder="请选择用户级别">
-            <el-option v-for="(item, index) in levelValues" :label="item" :value="index" :key="index" />
+            <el-option v-for="(item, index) in levelValues" :label="item" :value="item" :key="index" />
           </el-select>
         </el-form-item>
         <el-form-item label="街道:" label-width="120px" prop="street">
           <el-select v-model="currentData.street" placeholder="请选择用户街道">
-            <el-option v-for="(item, index) in street"  :label="item" :value="item" :key="index" />
+            <el-option v-for="(item, index) in street" :label="item" :value="item" :key="index" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -162,12 +162,12 @@ export default {
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
         corporationPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        organizationName: [{ required: true, message: '机构名称不能为空'}],
-        password: [{ required: true, message: '登录密码不能为空'}],
+        organizationName: [{ required: true, message: '机构名称不能为空' }],
+        password: [{ required: true, message: '登录密码不能为空' }],
 
-        street: [{ required: true, message: '请选择街道', trigger: 'change'}],
-        levelText: [{ required: true, message: '请选择级别', trigger: 'change'}],
-        address: [{ required: true, message: '请填写地址'}],
+        street: [{ required: true, message: '请选择街道', trigger: 'change' }],
+        levelText: [{ required: true, message: '请选择级别', trigger: 'change' }],
+        address: [{ required: true, message: '请填写地址' }],
       },
       total: 0,
       params: {
@@ -176,6 +176,7 @@ export default {
         search: '',
       },
       levelValues,
+      levelText: '',
       street,
       list: [],
       listLoading: true,
@@ -185,8 +186,8 @@ export default {
       addForm: {
         phone: '',
         organizationName: '',
-        password: ''
-      }
+        password: '',
+      },
     }
   },
   created() {
@@ -198,14 +199,14 @@ export default {
         if (!val) {
           this.$refs.addForm.resetFields()
         }
-      }
+      },
     },
     editVisible: {
       handler(val) {
         if (!val) {
           this.$refs.editForm.resetFields()
         }
-      }
+      },
     },
   },
 
@@ -222,30 +223,34 @@ export default {
       this.$refs.addForm.validate(async (valid) => {
         if (valid) {
           await addUser(this.addForm)
-          this.$message({ message: '新增用户成功', type: 'success' });
+          this.$message({ message: '新增用户成功', type: 'success' })
           this.fetchData()
           this.dialogFormVisible = false
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     edit(row) {
       this.editVisible = true
-      this.currentData = Object.assign({}, { ...row.orgInfo, levelText: this.levelValues[row.orgInfo.level] })
+      this.currentData = Object.assign({}, row.orgInfo, { levelText: this.levelValues[row.orgInfo.level] })
     },
     editSubmit() {
       this.$refs.editForm.validate(async (valid) => {
         if (valid) {
-          const params = Object.assign({}, this.$lo.pick(this.currentData, ['address', 'bednum', 'managerPhone', 'organizationId', 'street', 'corporationPhone']), { level: String(this.currentData.levelText) })
+          const params = Object.assign(
+            {},
+            this.$lo.pick(this.currentData, ['address', 'bednum', 'managerPhone', 'organizationId', 'street', 'corporationPhone']),
+            { level: String(this.levelValues.findIndex(item => item === this.currentData.levelText)) },
+          )
           await updateUser(params)
-          this.$message({ message: '编辑成功', type: 'success' });
+          this.$message({ message: '编辑成功', type: 'success' })
           this.fetchData()
           this.editVisible = false
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     fetchData() {
       this.listLoading = false
