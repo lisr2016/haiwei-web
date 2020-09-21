@@ -47,3 +47,4 @@ export function deleteOrg(data) {
     data
   })
 }
+

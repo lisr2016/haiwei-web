@@ -93,8 +93,16 @@
         <el-form-item label="用户密码" label-width="120px" prop="password">
           <el-input v-model="addForm.password" autocomplete="off" placeholder="请输入用户登录密码" />
         </el-form-item>
-        <el-form-item label="机构名称" label-width="120px" prop="organizationName">
-          <el-input v-model="addForm.organizationName" autocomplete="off" placeholder="请输入用户机构名称" />
+        <el-form-item label="机构名称" label-width="120px" prop="organizationId">
+<!--          <el-input v-model="addForm.organizationName" autocomplete="off" placeholder="请输入用户机构名称" />-->
+          <el-select v-model="addForm.organizationId" filterable remote reserve-keyword placeholder="请输入关键词搜索机构">
+            <el-option
+              v-for="item in selectList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -141,7 +149,7 @@
 </template>
 
 <script>
-import { addUser, getUserList, updateOrg } from '@/api/table'
+import { addUser, getUserList, updateOrg, getOrgList } from '@/api/table'
 
 const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
@@ -163,13 +171,14 @@ export default {
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
         corporationPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        organizationName: [{ required: true, message: '机构名称不能为空' }],
+        organizationId: [{ required: true, message: '机构名称不能为空' }],
         password: [{ required: true, message: '登录密码不能为空' }],
 
         street: [{ required: true, message: '请选择街道', trigger: 'change' }],
         levelText: [{ required: true, message: '请选择级别', trigger: 'change' }],
         address: [{ required: true, message: '请填写地址' }],
       },
+      selectList: [],
       total: 0,
       params: {
         offset: 1,
@@ -186,13 +195,16 @@ export default {
       currentData: {},
       addForm: {
         phone: '',
-        organizationName: '',
+        organizationId: '',
         password: '',
       },
     }
   },
   created() {
     this.fetchData()
+    getOrgList({limit: 99, offset: 1}).then(res => {
+      this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
+    })
   },
   watch: {
     dialogFormVisible: {
