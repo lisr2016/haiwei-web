@@ -217,6 +217,7 @@ export default {
         const header = ['手机号', '机构名称', '法人电话', '地址', '负责人电话', '床位数', '级别', '街道']
         const filterVal = ['phone', 'name', 'corporationPhone', 'address', 'managerPhone', 'bednum', 'level', 'street']
         const data = this.formatJson(filterVal, this.list)
+        console.log(data)
         excel.export_json_to_excel({
           header,
           data,

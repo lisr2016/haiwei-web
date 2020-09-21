@@ -4,36 +4,37 @@
 
 <script>
 import echarts from 'echarts'
-require('echarts/theme/macarons') // echarts theme
 import resize from './mixins/resize'
+
+require('echarts/theme/macarons') // echarts theme
 
 export default {
   mixins: [resize],
   props: {
     className: {
       type: String,
-      default: 'chart'
+      default: 'chart',
     },
     width: {
       type: String,
-      default: '100%'
+      default: '100%',
     },
     height: {
       type: String,
-      default: '350px'
+      default: '350px',
     },
     autoResize: {
       type: Boolean,
-      default: true
+      default: true,
     },
     chartData: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      chart: null
+      chart: null,
     }
   },
   watch: {
@@ -41,8 +42,8 @@ export default {
       deep: true,
       handler(val) {
         this.setOptions(val)
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -61,75 +62,149 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     },
-    setOptions({ expectedData, actualData } = {}) {
+    setOptions({ expectedData, actualData, Data1, Data2, Data3, Data4 } = {}) {
       this.chart.setOption({
         xAxis: {
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          data: ['四月', '五月', '六月', '七月', '八月', '九月', '十月'],
           boundaryGap: false,
           axisTick: {
-            show: false
-          }
+            show: false,
+          },
         },
         grid: {
           left: 10,
           right: 10,
           bottom: 20,
           top: 30,
-          containLabel: true
+          containLabel: true,
         },
         tooltip: {
           trigger: 'axis',
           axisPointer: {
-            type: 'cross'
+            type: 'cross',
           },
-          padding: [5, 10]
+          padding: [5, 10],
         },
         yAxis: {
           axisTick: {
-            show: false
-          }
+            show: false,
+          },
         },
         legend: {
-          data: ['expected', 'actual']
+          data: ['医疗废物', '厨余废物', '可回收物', '有害垃圾', '其他垃圾', '大件废弃物品'],
         },
-        series: [{
-          name: 'expected', itemStyle: {
-            normal: {
-              color: '#FF005A',
-              lineStyle: {
-                color: '#FF005A',
-                width: 2
-              }
-            }
+        series: [
+          {
+            name: '医疗废物',
+            itemStyle: { normal: { color: '#FF005A', lineStyle: { color: '#FF005A', width: 2 } } },
+            smooth: true,
+            type: 'line',
+            data: expectedData,
+            animationDuration: 2800,
+            animationEasing: 'cubicInOut',
           },
-          smooth: true,
-          type: 'line',
-          data: expectedData,
-          animationDuration: 2800,
-          animationEasing: 'cubicInOut'
-        },
-        {
-          name: 'actual',
-          smooth: true,
-          type: 'line',
-          itemStyle: {
-            normal: {
-              color: '#3888fa',
-              lineStyle: {
-                color: '#3888fa',
-                width: 2
+          {
+            name: '厨余废物',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#3888FA',
+                lineStyle: {
+                  color: '#3888FA',
+                  width: 2,
+                },
+                areaStyle: {
+                  color: '#F3F8FF',
+                },
               },
-              areaStyle: {
-                color: '#f3f8ff'
-              }
-            }
+            },
+            data: actualData,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut',
           },
-          data: actualData,
-          animationDuration: 2800,
-          animationEasing: 'quadraticOut'
-        }]
+          {
+            name: '可回收物',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#2EC7C9',
+                lineStyle: {
+                  color: '#2EC7C9',
+                  width: 2,
+                },
+                areaStyle: {
+                  color: '#F3F8FF',
+                },
+              },
+            },
+            data: Data1,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut',
+          },
+          {
+            name: '有害垃圾',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#FEB980',
+                lineStyle: {
+                  color: '#FEB980',
+                  width: 2,
+                },
+                areaStyle: {
+                  color: '#F3F8FF',
+                },
+              },
+            },
+            data: Data2,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut',
+          },
+          {
+            name: '其他垃圾',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#B6A2DE',
+                lineStyle: {
+                  color: '#B6A2DE',
+                  width: 2,
+                },
+                areaStyle: {
+                  color: '#F3F8FF',
+                },
+              },
+            },
+            data: Data3,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut',
+          },
+          {
+            name: '大件废弃物品',
+            smooth: true,
+            type: 'line',
+            itemStyle: {
+              normal: {
+                color: '#5AB1EF',
+                lineStyle: {
+                  color: '#5AB1EF',
+                  width: 2,
+                },
+                areaStyle: {
+                  color: '#F3F8FF',
+                },
+              },
+            },
+            data: Data4,
+            animationDuration: 2800,
+            animationEasing: 'quadraticOut',
+          }],
       })
-    }
-  }
+    },
+  },
 }
 </script>

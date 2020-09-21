@@ -30,3 +30,12 @@ export function getMedicMonthly(data) {
     data
   })
 }
+export function getSummaryTotal(params) {
+  return request({
+    url: '/cms/summary/total',
+    method: 'get',
+    params
+  })
+}
+
+

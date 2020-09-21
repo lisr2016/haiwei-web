@@ -1,69 +1,69 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">数据大屏</div>
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
-    </el-row>
-
+    <div class="header">
+      <el-select style="width: 300px; margin-right: 50px" v-model="type" placeholder="请选择" @change="getData">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <el-date-picker v-model="time" type="daterange" value-format="timestamp" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
+      <div class="btn">
+        <el-button>查看</el-button>
+        <el-button>下载</el-button>
+      </div>
+    </div>
     <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
+      <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
           <pie-chart />
         </div>
       </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
+      <el-col :xs="24" :sm="24" :lg="12">
         <div class="chart-wrapper">
-          <bar-chart />
+          <line-chart :chart-data="lineChartData" />
         </div>
       </el-col>
+    </el-row>
+    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+      <bar-chart />
     </el-row>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
 import PieChart from './components/PieChart'
 import BarChart from './components/BarChart'
 const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
+  expectedData: [100, 120, 161, 134, 105, 160, 165],
+  actualData: [120, 82, 91, 154, 162, 140, 145],
+  Data1: [110, 62, 51, 134, 122, 110, 125],
+  Data2: [130, 72, 61, 144, 132, 120, 135],
+  Data3: [140, 92, 71, 154, 142, 130, 145],
+  Data4: [150, 52, 81, 164, 152, 160, 165],
 }
+
+const options = [
+  { label: '周报', value: '0' },
+  { label: '年报', value: '1' }
+]
 export default {
   name: 'Dashboard',
   components: {
     LineChart,
-    RaddarChart,
     PieChart,
     BarChart,
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      options,
+      type: '0',
+      time: '',
+      lineChartData
     }
   },
   methods: {
-
+    getData() {
+      console.log('===')
+    }
   }
 }
 </script>
@@ -72,10 +72,13 @@ export default {
   .dashboard {
     &-container {
       margin: 30px;
-    }
-    &-text {
-      font-size: 30px;
-      line-height: 46px;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #eeeeee;
+        padding-bottom: 30px;
+      }
     }
   }
 </style>
