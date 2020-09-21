@@ -47,12 +47,12 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/screen',
-    meta: { title: '报表', icon: 'dashboard' },
+    meta: { title: '报表', icon: 'el-icon-s-data' },
     children: [{
       path: 'screen',
       name: 'Screen',
       component: () => import('@/views/screen/index'),
-      meta: { title: '数据大屏', icon: 'dashboard' }
+      meta: { title: '数据大屏', icon: 'el-icon-s-marketing' }
     }, {
       path: 'summary',
       name: 'Summary',
@@ -72,7 +72,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/inspect/index'),
-        meta: { title: '巡检', icon: 'form' }
+        meta: { title: '巡检', icon: 'el-icon-message-solid' }
       }
     ]
     // children: [
@@ -96,6 +96,21 @@ export const constantRoutes = [
     //   }
     // ]
   },
+  
+  {
+    path: '/orgList',
+    component: Layout,
+    redirect: '/orgList/index',
+    meta: { icon: 'el-icon-s-grid' },
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/orgList/index'),
+        meta: { title: '机构列表', icon: 'el-icon-s-home' }
+      }
+    ]
+  },
 
   {
     path: '/userList',
@@ -107,7 +122,22 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/userList/index'),
-        meta: { title: '用户', icon: 'form' }
+        meta: { title: '用户列表', icon: 'el-icon-user-solid' }
+      }
+    ]
+  },
+  
+  {
+    path: '/notification',
+    component: Layout,
+    redirect: '/notification/index',
+    meta: { icon: 'el-icon-s-comment' },
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/notification/index'),
+        meta: { title: '通知', icon: 'el-icon-s-comment' }
       }
     ]
   },

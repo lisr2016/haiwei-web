@@ -2,7 +2,6 @@
   <div class="app-container">
     <div class="search-box">
       <el-button @click="dialogFormVisible = true">新增</el-button>
-      <el-button @click="download">下载</el-button>
       <div class="right">
         <el-input placeholder="请输入搜索内容" v-model="params.search" />
         <el-button @click="fetchData">查找</el-button>
@@ -21,44 +20,44 @@
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="手机号">
-        <template slot-scope="scope">
-          {{ scope.row.phone }}
-        </template>
-      </el-table-column>
       <el-table-column label="机构名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.orgInfo.name }}</span>
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="法人电话" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.corporationPhone }}
+          {{ scope.row.corporationPhone }}
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="地址" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.address }}
+          {{ scope.row.address }}
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="负责人电话" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.managerPhone }}
+          {{ scope.row.managerPhone }}
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="床位数" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.bednum }}
+          {{ scope.row.bednum }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="级别">
         <template slot-scope="scope">
-          {{ levelValues[scope.row.orgInfo.level] }}
+          {{ levelValues[scope.row.level] }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="街道">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.street }}
+          {{ scope.row.street }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="created_at" label="状态">
+        <template slot-scope="scope">
+          {{ scope.row.isDeleted?`已注销`:`正常` }}
         </template>
       </el-table-column>
       <el-table-column
@@ -66,8 +65,8 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <!--          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>-->
           <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="handleDeleteOrg(scope.row)">`{{ scope.row.isDeleted?`恢复`:`注销`}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,16 +84,32 @@
 
 
     <!--  新增  -->
-    <el-dialog title="新增用户" :visible.sync="dialogFormVisible">
+    <el-dialog title="新增机构" :visible.sync="dialogFormVisible">
       <el-form :model="addForm" ref="addForm" :rules="rules">
-        <el-form-item label="用户手机" label-width="120px" prop="phone">
-          <el-input v-model="addForm.phone" autocomplete="off" placeholder="请输入用户登录手机号" />
+        <el-form-item label="机构名称" label-width="120px" prop="name">
+          <el-input v-model="addForm.name" autocomplete="off" placeholder="请输入用户机构名称" />
         </el-form-item>
-        <el-form-item label="用户密码" label-width="120px" prop="password">
-          <el-input v-model="addForm.password" autocomplete="off" placeholder="请输入用户登录密码" />
+        <el-form-item label="法人电话:" label-width="120px" prop="corporationPhone">
+          <el-input v-model="addForm.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
         </el-form-item>
-        <el-form-item label="机构名称" label-width="120px" prop="organizationName">
-          <el-input v-model="addForm.organizationName" autocomplete="off" placeholder="请输入用户机构名称" />
+        <el-form-item label="负责人电话:" label-width="120px">
+          <el-input v-model="addForm.managerPhone" autocomplete="off" placeholder="请输入负责人电话" />
+        </el-form-item>
+        <el-form-item label="床位数:" label-width="120px">
+          <el-input v-model="addForm.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
+        </el-form-item>
+        <el-form-item label="地址:" label-width="120px" prop="address">
+          <el-input v-model="addForm.address" autocomplete="off" placeholder="请输入用户地址" />
+        </el-form-item>
+        <el-form-item label="级别:" label-width="120px" prop="levelText">
+          <el-select v-model="addForm.levelText" placeholder="请选择用户级别">
+            <el-option v-for="(item, index) in levelValues" :label="item" :value="item" :key="index" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="街道:" label-width="120px" prop="street">
+          <el-select v-model="addForm.street" placeholder="请选择用户街道">
+            <el-option v-for="(item, index) in street" :label="item" :value="item" :key="index" />
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -113,7 +128,7 @@
           <el-input v-model="currentData.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
         </el-form-item>
         <el-form-item label="负责人电话:" label-width="120px">
-          <el-input v-model="currentData.managerPhone" type="number" autocomplete="off" placeholder="请输入负责人电话" />
+          <el-input v-model="currentData.managerPhone" autocomplete="off" placeholder="请输入负责人电话" />
         </el-form-item>
         <el-form-item label="床位数:" label-width="120px">
           <el-input v-model="currentData.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
@@ -141,7 +156,7 @@
 </template>
 
 <script>
-import { addUser, getUserList, updateOrg } from '@/api/table'
+import { addOrg, getOrgList, updateOrg, deleteOrg } from '@/api/table'
 
 const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
@@ -158,14 +173,13 @@ export default {
           return callback(new Error('请输入正确的手机号'))
         }
       }
-    }
+    };
     return {
       rules: {
-        phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        corporationPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        organizationName: [{ required: true, message: '机构名称不能为空' }],
+        // managerPhone: [{ required: true, trigger: 'blur', validator: checkPhone, message: '机构名称不能为空'  }],
+        name: [{ required: true, message: '机构名称不能为空' }],
+          managerPhone: [{ required: true, message: '机构名称不能为空'  }],
         password: [{ required: true, message: '登录密码不能为空' }],
-
         street: [{ required: true, message: '请选择街道', trigger: 'change' }],
         levelText: [{ required: true, message: '请选择级别', trigger: 'change' }],
         address: [{ required: true, message: '请填写地址' }],
@@ -186,7 +200,7 @@ export default {
       currentData: {},
       addForm: {
         phone: '',
-        organizationName: '',
+        name: '',
         password: '',
       },
     }
@@ -212,37 +226,48 @@ export default {
   },
 
   methods: {
-    download() {
-      import('@/utils/excel').then(excel => {
-        const header = ['手机号', '机构名称', '法人电话', '地址', '负责人电话', '床位数', '级别', '街道']
-        const filterVal = ['phone', 'name', 'corporationPhone', 'address', 'managerPhone', 'bednum', 'level', 'street']
-        const data = this.formatJson(filterVal, this.list)
-        excel.export_json_to_excel({
-          header,
-          data,
-          filename: 'demo',
-          autoWidth: true,
-          bookType: 'xlsx',
-        })
-      })
-    },
+      download () {
+          import('@/utils/excel').then(excel => {
+              const header = ['手机号', '机构名称', '法人电话', '地址', '负责人电话', '床位数', '级别', '街道']
+              const filterVal = ['phone', 'name', 'corporationPhone', 'address', 'managerPhone', 'bednum', 'level', 'street']
+              const data = this.formatJson(filterVal, this.list)
+              excel.export_json_to_excel({
+                  header,
+                  data,
+                  filename: 'demo',
+                  autoWidth: true,
+                  bookType: 'xlsx',
+              })
+          })
+      },
+      async handleDeleteOrg (row) {
+          this.currentData = Object.assign({}, row, {levelText: this.levelValues[row.level]});
+          const params = {
+              isDelete: !row.isDeleted,
+              organizationId: this.currentData.organizationId
+          };
+          await deleteOrg(params);
+          this.$message({message: `${row.isDeleted ? `恢复成功` : `注销成功`}`, type: 'info'});
+          this.fetchData();
+          this.editVisible = false
+      },
     formatJson(filterVal, data) {
-      return data.map(v => filterVal.map(j => v[j] ? v[j] : v.orgInfo[j]))
+      return data.map(v => filterVal.map(j => v[j] ? v[j] : v[j]))
     },
     handleSizeChange(val) {
-      this.params.limit = val
+      this.params.limit = val;
       this.fetchData()
     },
     handleCurrentChange(val) {
-      this.params.offset = val
+      this.params.offset = val;
       this.fetchData()
     },
     add() {
       this.$refs.addForm.validate(async (valid) => {
         if (valid) {
-          await addUser(this.addForm)
-          this.$message({ message: '新增用户成功', type: 'success' })
-          this.fetchData()
+          await addOrg(this.addForm);
+          this.$message({ message: '新增机构成功', type: 'success' });
+          this.fetchData();
           this.dialogFormVisible = false
         } else {
           return false
@@ -250,8 +275,8 @@ export default {
       })
     },
     edit(row) {
-      this.editVisible = true
-      this.currentData = Object.assign({}, row.orgInfo, { levelText: this.levelValues[row.orgInfo.level] })
+      this.editVisible = true;
+      this.currentData = Object.assign({}, row, { levelText: this.levelValues[row.level] })
     },
     editSubmit() {
       this.$refs.editForm.validate(async (valid) => {
@@ -262,8 +287,8 @@ export default {
             { level: String(this.levelValues.findIndex(item => item === this.currentData.levelText)) },
           );
           await updateOrg(params);
-          this.$message({ message: '编辑成功', type: 'success' })
-          this.fetchData()
+          this.$message({ message: '编辑成功', type: 'success' });
+          this.fetchData();
           this.editVisible = false
         } else {
           return false
@@ -272,7 +297,7 @@ export default {
     },
     fetchData() {
       this.listLoading = false
-        getUserList(this.params).then(response => {
+      getOrgList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.count
         this.listLoading = false

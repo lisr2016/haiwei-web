@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getList(data) {
+export function getUserList(data) {
   return request({
     url: '/cms/get/user/list',
     method: 'post',
@@ -16,9 +16,33 @@ export function addUser(data) {
   })
 }
 
-export function updateUser(data) {
+export function updateOrg(data) {
   return request({
     url: '/cms/update/org/info',
+    method: 'post',
+    data
+  })
+}
+
+export function getOrgList(data) {
+  return request({
+    url: '/cms/get/org/list',
+    method: 'post',
+    data
+  })
+}
+
+export function addOrg(data) {
+  return request({
+    url: '/cms/new/org',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteOrg(data) {
+  return request({
+    url: '/cms/delete/org',
     method: 'post',
     data
   })

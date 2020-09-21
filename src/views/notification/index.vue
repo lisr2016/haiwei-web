@@ -260,8 +260,8 @@ export default {
             {},
             this.$lo.pick(this.currentData, ['address', 'bednum', 'managerPhone', 'organizationId', 'street', 'corporationPhone']),
             { level: String(this.levelValues.findIndex(item => item === this.currentData.levelText)) },
-          );
-          await updateOrg(params);
+          )
+          await updateOrg(params)
           this.$message({ message: '编辑成功', type: 'success' })
           this.fetchData()
           this.editVisible = false
