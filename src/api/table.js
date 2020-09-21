@@ -48,3 +48,36 @@ export function deleteOrg(data) {
   })
 }
 
+
+
+export function getNotificationList(data) {
+  return request({
+    url: '/cms/get/notification/list',
+    method: 'post',
+    data
+  })
+}
+
+export function updateNotification(data) {
+  return request({
+    url: '/cms/update/notification/info',
+    method: 'post',
+    data
+  })
+}
+
+export function addNotification(data) {
+  return request({
+    url: '/cms/new/notification',
+    method: 'post',
+    data
+  })
+}
+export function cancelNotification(data) {
+  return request({
+    url: '/cms/cancel/notification',
+    method: 'post',
+    data
+  })
+}
+

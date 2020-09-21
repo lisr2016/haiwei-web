@@ -2,7 +2,6 @@
   <div class="app-container">
     <div class="search-box">
       <el-button @click="dialogFormVisible = true">新增</el-button>
-      <el-button @click="download">下载</el-button>
       <div class="right">
         <el-input placeholder="请输入搜索内容" v-model="params.search" />
         <el-button @click="fetchData">查找</el-button>
@@ -26,39 +25,14 @@
           {{ scope.row.phone }}
         </template>
       </el-table-column>
-      <el-table-column label="机构名称" align="center">
+      <el-table-column label="所属机构" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.orgInfo.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="法人电话" align="center">
+      <el-table-column label="是否完成基础信息填报" align="center">
         <template slot-scope="scope">
-          {{ scope.row.orgInfo.corporationPhone }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="地址" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.orgInfo.address }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="负责人电话" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.orgInfo.managerPhone }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="床位数" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.orgInfo.bednum }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="级别">
-        <template slot-scope="scope">
-          {{ levelValues[scope.row.orgInfo.level] }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="街道">
-        <template slot-scope="scope">
-          {{ scope.row.orgInfo.street }}
+          {{ scope.row.orgInfo.initialized?`已完成`:`未完成` }}
         </template>
       </el-table-column>
       <el-table-column
@@ -67,7 +41,7 @@
       >
         <template slot-scope="scope">
           <!--          <el-button type="text" size="small" @click="handleClick(scope.row)">删除</el-button>-->
-          <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row)">修改密码</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,7 +67,7 @@
         <el-form-item label="用户密码" label-width="120px" prop="password">
           <el-input v-model="addForm.password" autocomplete="off" placeholder="请输入用户登录密码" />
         </el-form-item>
-        <el-form-item label="机构名称" label-width="120px" prop="organizationId">
+        <el-form-item label="所属机构名称" label-width="120px" prop="organizationId">
 <!--          <el-input v-model="addForm.organizationName" autocomplete="off" placeholder="请输入用户机构名称" />-->
           <el-select v-model="addForm.organizationId" filterable remote reserve-keyword placeholder="请输入关键词搜索机构">
             <el-option
@@ -111,40 +85,6 @@
       </div>
     </el-dialog>
 
-    <!--  编辑  -->
-    <el-dialog title="编辑" :visible.sync="editVisible">
-      <el-form :model="currentData" ref="editForm" :rules="rules">
-        <el-form-item label="机构名称:" label-width="120px">
-          <span style="font-size: 14px">{{ currentData.name }}</span>
-        </el-form-item>
-        <el-form-item label="法人电话:" label-width="120px" prop="corporationPhone">
-          <el-input v-model="currentData.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
-        </el-form-item>
-        <el-form-item label="负责人电话:" label-width="120px">
-          <el-input v-model="currentData.managerPhone" type="number" autocomplete="off" placeholder="请输入负责人电话" />
-        </el-form-item>
-        <el-form-item label="床位数:" label-width="120px">
-          <el-input v-model="currentData.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
-        </el-form-item>
-        <el-form-item label="地址:" label-width="120px" prop="address">
-          <el-input v-model="currentData.address" autocomplete="off" placeholder="请输入用户地址" />
-        </el-form-item>
-        <el-form-item label="级别:" label-width="120px" prop="levelText">
-          <el-select v-model="currentData.levelText" placeholder="请选择用户级别">
-            <el-option v-for="(item, index) in levelValues" :label="item" :value="item" :key="index" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="街道:" label-width="120px" prop="street">
-          <el-select v-model="currentData.street" placeholder="请选择用户街道">
-            <el-option v-for="(item, index) in street" :label="item" :value="item" :key="index" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editSubmit">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -166,17 +106,12 @@ export default {
           return callback(new Error('请输入正确的手机号'))
         }
       }
-    }
+    };
     return {
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-        corporationPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
         organizationId: [{ required: true, message: '机构名称不能为空' }],
         password: [{ required: true, message: '登录密码不能为空' }],
-
-        street: [{ required: true, message: '请选择街道', trigger: 'change' }],
-        levelText: [{ required: true, message: '请选择级别', trigger: 'change' }],
-        address: [{ required: true, message: '请填写地址' }],
       },
       selectList: [],
       total: 0,
@@ -224,21 +159,6 @@ export default {
   },
 
   methods: {
-    download() {
-      import('@/utils/excel').then(excel => {
-        const header = ['手机号', '机构名称', '法人电话', '地址', '负责人电话', '床位数', '级别', '街道']
-        const filterVal = ['phone', 'name', 'corporationPhone', 'address', 'managerPhone', 'bednum', 'level', 'street']
-        const data = this.formatJson(filterVal, this.list)
-        console.log(data)
-        excel.export_json_to_excel({
-          header,
-          data,
-          filename: 'demo',
-          autoWidth: true,
-          bookType: 'xlsx',
-        })
-      })
-    },
     formatJson(filterVal, data) {
       return data.map(v => filterVal.map(j => v[j] ? v[j] : v.orgInfo[j]))
     },
@@ -257,27 +177,6 @@ export default {
           this.$message({ message: '新增用户成功', type: 'success' })
           this.fetchData()
           this.dialogFormVisible = false
-        } else {
-          return false
-        }
-      })
-    },
-    edit(row) {
-      this.editVisible = true
-      this.currentData = Object.assign({}, row.orgInfo, { levelText: this.levelValues[row.orgInfo.level] })
-    },
-    editSubmit() {
-      this.$refs.editForm.validate(async (valid) => {
-        if (valid) {
-          const params = Object.assign(
-            {},
-            this.$lo.pick(this.currentData, ['address', 'bednum', 'managerPhone', 'organizationId', 'street', 'corporationPhone']),
-            { level: String(this.levelValues.findIndex(item => item === this.currentData.levelText)) },
-          );
-          await updateOrg(params);
-          this.$message({ message: '编辑成功', type: 'success' })
-          this.fetchData()
-          this.editVisible = false
         } else {
           return false
         }
