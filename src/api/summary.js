@@ -7,3 +7,26 @@ export function getDomesticDaily(data) {
     data
   })
 }
+
+export function getDomesticWeekly(data) {
+  return request({
+    url: '/cms/summary/domestic/weekly',
+    method: 'post',
+    data
+  })
+}
+
+export function getDomesticMonthly(data) {
+  return request({
+    url: '/cms/summary/domestic/monthly',
+    method: 'post',
+    data
+  })
+}
+export function getMedicMonthly(data) {
+  return request({
+    url: '/cms/summary/medic/monthly',
+    method: 'post',
+    data
+  })
+}
