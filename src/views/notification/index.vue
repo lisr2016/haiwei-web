@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-box">
-      <el-button @click="dialogFormVisible = true">新增</el-button>
+      <el-button @click="dialogFormVisible = true">新增通知</el-button>
     </div>
     <el-table
       v-loading="listLoading"
