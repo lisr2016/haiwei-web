@@ -11,9 +11,9 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center">
+      <el-table-column align="center" width="60px">
         <template slot-scope="scope">
-          {{ scope.$index + 1 }}
+          {{ (params.offset - 1) * params.limit + scope.$index + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="标题">
@@ -33,7 +33,7 @@
       </el-table-column>
       <el-table-column label="发布时间" align="center">
         <template slot-scope="scope">
-          {{ scope.row.createTime }}
+          {{ formatUTC(scope.row.createTime) }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="状态">
@@ -62,7 +62,7 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
-    
+
     <el-dialog title="新增消息" :visible.sync="dialogFormVisible">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="标题" label-width="120px" prop="title">
@@ -71,7 +71,7 @@
         <el-form-item label="内容" label-width="120px" prop="content">
           <el-input v-model="form.content" type="textarea" rows="5" autocomplete="off" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item v-if="!isEdit" label="是否取消发布" label-width="120px">
+        <el-form-item v-if="!isEdit" label="是否发布" label-width="120px">
           <el-switch v-model="form.isDeleted" />
         </el-form-item>
       </el-form>
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { addNotification, getNotificationList, updateNotification, cancelNotification } from '@/api/table'
+import { addNotification, cancelNotification, getNotificationList, updateNotification } from '@/api/table'
 
 export default {
   data() {
@@ -107,7 +107,7 @@ export default {
       form: {
         title: '',
         content: '',
-        isDeleted: false,
+        isDeleted: true,
       },
     }
   },
@@ -119,21 +119,45 @@ export default {
       handler(val) {
         if (!val) {
           this.$refs.form.resetFields()
+          this.form = {
+            title: '',
+            content: '',
+            isDeleted: true,
+          }
         }
       },
-    }
+    },
   },
 
   methods: {
-    async handleCancelNotification (row) {
-        const params = {
-            isDelete: !row.isDeleted,
-            notificationId: row.notificationId
-        };
-        await cancelNotification(params);
-        this.$message({message: `${row.isDeleted ? '发布成功' : '取消发布成功'}`, type: 'info'});
-        this.fetchData();
-        this.editVisible = false
+    formatUTC(utc_datetime) {
+      // 转为正常的时间格式 年-月-日 时:分:秒
+      var T_pos = utc_datetime.indexOf('T')
+      var Z_pos = utc_datetime.indexOf('Z')
+      var year_month_day = utc_datetime.substr(0, T_pos)
+      var hour_minute_second = utc_datetime.substr(T_pos + 1, Z_pos - T_pos - 1)
+      var new_datetime = year_month_day + ' ' + hour_minute_second // 2017-03-31 08:02:06
+
+      // 处理成为时间戳
+      timestamp = new Date(Date.parse(new_datetime))
+      timestamp = timestamp.getTime()
+      timestamp = timestamp / 1000
+
+      // 增加8个小时，北京时间比utc时间多八个时区
+      var timestamp = timestamp + 8 * 60 * 60
+
+      // 时间戳转为时间
+      return new Date(parseInt(timestamp) * 1000).toLocaleString().replace(/年|月/g, '-').replace(/日/g, ' ')
+    },
+    async handleCancelNotification(row) {
+      const params = {
+        isDelete: !row.isDeleted,
+        notificationId: row.notificationId,
+      }
+      await cancelNotification(params)
+      this.$message({ message: `${row.isDeleted ? '发布成功' : '取消发布成功'}`, type: 'info' })
+      this.fetchData()
+      this.editVisible = false
     },
     add(type, row) {
       this.isEdit = type === '2'
@@ -145,7 +169,8 @@ export default {
     },
     submit() {
       const api = this.isEdit ? updateNotification : addNotification
-      const params = this.isEdit ? Object.assign({}, this.form, { notificationId: this.messageId }) : this.form
+      const params = this.isEdit ? Object.assign({}, _.pick(this.form, ['content', 'title']), { notificationId: this.messageId }) : Object.assign({}, this.form, { isDeleted: !this.form.isDeleted })
+      console.log(params)
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           await api(params)
@@ -159,7 +184,7 @@ export default {
     },
     fetchData() {
       this.listLoading = false
-        getNotificationList(this.params).then(response => {
+      getNotificationList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.count
         this.listLoading = false

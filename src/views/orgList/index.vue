@@ -15,9 +15,9 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center">
+      <el-table-column align="center" width="60px">
         <template slot-scope="scope">
-          {{ scope.$index + 1 }}
+          {{ (params.offset - 1) * params.limit + scope.$index  + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="机构名称" align="center">
@@ -153,6 +153,7 @@ export default {
       listLoading: true,
       dialogFormVisible: false,
       organizationId: '',
+      isEdit: false,
       form: {
         bednum: '',
         name: '',

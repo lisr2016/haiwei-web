@@ -81,3 +81,11 @@ export function cancelNotification(data) {
   })
 }
 
+export function updateUserInfo(data) {
+  return request({
+    url: '/cms/update/user/info',
+    method: 'post',
+    data
+  })
+}
+
