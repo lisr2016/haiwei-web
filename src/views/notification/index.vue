@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-box">
-      <el-button @click="dialogFormVisible = true">新增通知</el-button>
+      <el-button @click="add('1')">新增通知</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -38,7 +38,7 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="状态">
         <template slot-scope="scope">
-          {{ scope.row.isDeleted?`取消发布`:`已发布` }}
+          {{ scope.row.isDeleted ? '取消发布' : '已发布' }}
         </template>
       </el-table-column>
       <el-table-column
@@ -46,8 +46,8 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
-          <el-button type="text" size="small" @click="handleCancelNotification(scope.row)">`{{ scope.row.isDeleted?`消息发布`:`取消发布`}}</el-button>
+          <el-button type="text" size="small" @click="add('2', scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="handleCancelNotification(scope.row)">{{ scope.row.isDeleted ? '消息发布': '取消发布'}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -62,37 +62,22 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
-
-
-    <!--  新增  -->
+    
     <el-dialog title="新增消息" :visible.sync="dialogFormVisible">
-      <el-form :model="addForm" ref="addForm" :rules="rules">
-        <el-form-item label="标题" label-width="120px" prop="phone">
-          <el-input v-model="addForm.title" autocomplete="off" placeholder="请输入标题" />
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item label="标题" label-width="120px" prop="title">
+          <el-input v-model="form.title" autocomplete="off" placeholder="请输入标题" />
         </el-form-item>
-        <el-form-item label="内容" label-width="120px" prop="password">
-          <el-input v-model="addForm.content" autocomplete="off" placeholder="请输入内容" />
+        <el-form-item label="内容" label-width="120px" prop="content">
+          <el-input v-model="form.content" type="textarea" rows="5" autocomplete="off" placeholder="请输入内容" />
+        </el-form-item>
+        <el-form-item v-if="!isEdit" label="是否取消发布" label-width="120px">
+          <el-switch v-model="form.isDeleted" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="add">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <!--  编辑  -->
-    <el-dialog title="编辑消息" :visible.sync="editVisible">
-      <el-form :model="currentData" ref="editForm" :rules="rules">
-        <el-form-item label="标题:" label-width="120px" prop="corporationPhone">
-          <el-input v-model="currentData.title" autocomplete="off" placeholder="请输入标题" />
-        </el-form-item>
-        <el-form-item label="内容:" label-width="120px">
-          <el-input v-model="currentData.content" type="number" autocomplete="off" placeholder="请输入内容" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editSubmit">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -105,8 +90,8 @@ export default {
   data() {
     return {
       rules: {
-        title: [{ required: true, message: '标题' }],
-        content: [{ required: true, message: '内容' }],
+        title: [{ required: true, message: '标题不能为空' }],
+        content: [{ required: true, message: '内容不能为空' }],
       },
       total: 0,
       params: {
@@ -117,12 +102,12 @@ export default {
       list: [],
       listLoading: true,
       dialogFormVisible: false,
-      editVisible: false,
-      currentData: {},
-      addForm: {
+      isEdit: false,
+      messageId: '',
+      form: {
         title: '',
         content: '',
-        password: '',
+        isDeleted: false,
       },
     }
   },
@@ -133,17 +118,10 @@ export default {
     dialogFormVisible: {
       handler(val) {
         if (!val) {
-          this.$refs.addForm.resetFields()
+          this.$refs.form.resetFields()
         }
       },
-    },
-    editVisible: {
-      handler(val) {
-        if (!val) {
-          this.$refs.editForm.resetFields()
-        }
-      },
-    },
+    }
   },
 
   methods: {
@@ -164,15 +142,27 @@ export default {
             notificationId: row.notificationId
         };
         await cancelNotification(params);
-        this.$message({message: `${row.isDeleted ? `发布成功` : `取消发布成功`}`, type: 'info'});
+        this.$message({message: `${row.isDeleted ? '发布成功' : '取消发布成功'}`, type: 'info'});
         this.fetchData();
         this.editVisible = false
     },
-    add() {
-      this.$refs.addForm.validate(async (valid) => {
+    add(type, row) {
+      console.log(row)
+      this.isEdit = type === '2'
+      this.messageId = type === '2' ? row.notificationId : ''
+      if (type === '2') {
+        Object.keys(this.form).forEach(key => this.form[key] = row[key])
+      }
+      this.dialogFormVisible = true
+    },
+    submit() {
+      const api = this.isEdit ? updateNotification : addNotification
+      const params = this.isEdit ? Object.assign({}, this.form, { notificationId: this.messageId }) : this.form
+      console.log(params)
+      this.$refs.form.validate(async (valid) => {
         if (valid) {
-          await addNotification(this.addForm)
-          this.$message({ message: '新增通知成功', type: 'success' })
+          await api(params)
+          this.$message({ message: this.isEdit ? '新增通知成功' : '编辑通知成功', type: 'success' })
           this.fetchData()
           this.dialogFormVisible = false
         } else {
@@ -181,22 +171,8 @@ export default {
       })
     },
     edit(row) {
-      this.editVisible = true
-    },
-    editSubmit() {
-      this.$refs.editForm.validate(async (valid) => {
-        if (valid) {
-          const params = Object.assign(
-            {},
-          )
-          await updateNotification(params)
-          this.$message({ message: '编辑成功', type: 'success' })
-          this.fetchData()
-          this.editVisible = false
-        } else {
-          return false
-        }
-      })
+      Object.keys(this.form).forEach(key => this.form[key] = row[key])
+      this.dialogFormVisible = true
     },
     fetchData() {
       this.listLoading = false
