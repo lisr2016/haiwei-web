@@ -127,16 +127,16 @@ export default {
   data() {
     const checkPhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('手机号不能为空'))
+        return callback(new Error('联系方式不能为空'))
       } else {
         const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
         if (reg.test(value)) {
           callback()
         } else {
-          return callback(new Error('请输入正确的手机号'))
+          return callback(new Error('请输入正确的联系方式'))
         }
       }
-    }
+    };
     return {
       rules: {
         name: [{ required: true, message: '机构名称不能为空' }],
@@ -192,20 +192,21 @@ export default {
       const params = {
         isDelete: !row.isDeleted,
         organizationId: this.currentData.organizationId,
-      }
-      await deleteOrg(params)
+      };
+      await deleteOrg(params);
       this.$message({ message: `${row.isDeleted ? `恢复成功` : `注销成功`}`, type: 'info' })
       this.fetchData()
       this.editVisible = false
     },
     submit() {
       const api = this.isEdit ? updateOrg : addOrg
-      const params = this.isEdit ? Object.assign({}, this.form, { organizationId: this.organizationId }) : this.form
+      const params = this.isEdit ? Object.assign({}, this.form, { organizationId: this.organizationId }) : this.form;
+      delete params.name;
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          await api(params)
+          await api(params);
           this.$message({ message: this.isEdit ? '编辑机构成功' : '新增机构成功', type: 'success' })
-          this.fetchData()
+          this.fetchData();
           this.dialogFormVisible = false
         } else {
           return false

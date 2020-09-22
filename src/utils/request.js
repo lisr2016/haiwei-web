@@ -49,15 +49,15 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
-    const res = response.data
+    const res = response.data;
 
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 0) {
       Message({
-        message: res.message || 'Error',
+        message: res.msg || 'Error',
         type: 'error',
         duration: 5 * 1000
-      })
+      });
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
@@ -78,33 +78,33 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('err' + error) // for debug
+    console.log('err' + error); // for debug
     Message({
       message: error.message,
       type: 'error',
       duration: 5 * 1000
-    })
+    });
     return Promise.reject(error)
   }
-)
+);
 
 function filterParams (params, post) {
-  const entityType = ['number', 'boolean']
+  const entityType = ['number', 'boolean'];
 
-  if (post) entityType.push('string')
+  if (post) entityType.push('string');
 
   if (entityType.includes(typeof params) || Array.isArray(params)) {
     return params
   }
 
   if (typeof params === 'object' && params) {
-    const result = {}
+    const result = {};
 
     Object.keys(params).forEach(key => {
       if (params[key] !== '') {
         result[key] = params[key]
       }
-    })
+    });
 
     return result
   }
