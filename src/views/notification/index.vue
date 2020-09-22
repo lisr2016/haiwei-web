@@ -125,17 +125,6 @@ export default {
   },
 
   methods: {
-    formatJson(filterVal, data) {
-      return data.map(v => filterVal.map(j => v[j] ? v[j] : v.orgInfo[j]))
-    },
-    handleSizeChange(val) {
-      this.params.limit = val
-      this.fetchData()
-    },
-    handleCurrentChange(val) {
-      this.params.offset = val
-      this.fetchData()
-    },
     async handleCancelNotification (row) {
         const params = {
             isDelete: !row.isDeleted,
@@ -147,7 +136,6 @@ export default {
         this.editVisible = false
     },
     add(type, row) {
-      console.log(row)
       this.isEdit = type === '2'
       this.messageId = type === '2' ? row.notificationId : ''
       if (type === '2') {
@@ -158,7 +146,6 @@ export default {
     submit() {
       const api = this.isEdit ? updateNotification : addNotification
       const params = this.isEdit ? Object.assign({}, this.form, { notificationId: this.messageId }) : this.form
-      console.log(params)
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           await api(params)
@@ -170,10 +157,6 @@ export default {
         }
       })
     },
-    edit(row) {
-      Object.keys(this.form).forEach(key => this.form[key] = row[key])
-      this.dialogFormVisible = true
-    },
     fetchData() {
       this.listLoading = false
         getNotificationList(this.params).then(response => {
@@ -181,6 +164,14 @@ export default {
         this.total = response.data.count
         this.listLoading = false
       })
+    },
+    handleSizeChange(val) {
+      this.params.limit = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.params.offset = val
+      this.fetchData()
     },
   },
 }

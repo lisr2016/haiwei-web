@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-box">
-      <el-button @click="dialogFormVisible = true">新增机构</el-button>
+      <el-button @click="add('1')">新增机构</el-button>
       <div class="right">
         <el-input placeholder="搜索机构名称" v-model="params.search" />
         <el-button @click="fetchData">查找</el-button>
@@ -65,8 +65,8 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
-          <el-button type="text" size="small" @click="handleDeleteOrg(scope.row)">`{{ scope.row.isDeleted?`恢复`:`注销`}}</el-button>
+          <el-button type="text" size="small" @click="add('2', scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="handleDeleteOrg(scope.row)">{{ scope.row.isDeleted?`恢复`:`注销`}}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,81 +82,44 @@
       :total="total">
     </el-pagination>
 
-
-    <!--  新增  -->
     <el-dialog title="新增机构" :visible.sync="dialogFormVisible">
-      <el-form :model="addForm" ref="addForm" :rules="rules">
+      <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="机构名称" label-width="120px" prop="name">
-          <el-input v-model="addForm.name" autocomplete="off" placeholder="请输入用户机构名称" />
+          <el-input v-model="form.name" :disabled="isEdit" autocomplete="off" placeholder="请输入用户机构名称" />
         </el-form-item>
-        <el-form-item label="法人电话:" label-width="120px" prop="corporationPhone">
-          <el-input v-model="addForm.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
+        <el-form-item label="法人电话:" label-width="120px">
+          <el-input v-model="form.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
         </el-form-item>
-        <el-form-item label="负责人电话:" label-width="120px">
-          <el-input v-model="addForm.managerPhone" autocomplete="off" placeholder="请输入负责人电话" />
+        <el-form-item label="负责人电话:" label-width="120px" prop="managerPhone">
+          <el-input v-model="form.managerPhone" autocomplete="off" placeholder="请输入负责人电话" />
         </el-form-item>
         <el-form-item label="床位数:" label-width="120px">
-          <el-input v-model="addForm.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
+          <el-input v-model="form.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
         </el-form-item>
         <el-form-item label="地址:" label-width="120px" prop="address">
-          <el-input v-model="addForm.address" autocomplete="off" placeholder="请输入用户地址" />
+          <el-input v-model="form.address" autocomplete="off" placeholder="请输入用户地址" />
         </el-form-item>
-        <el-form-item label="级别:" label-width="120px" prop="levelText">
-          <el-select v-model="addForm.levelText" placeholder="请选择用户级别">
-            <el-option v-for="(item, index) in levelValues" :label="item" :value="item" :key="index" />
+        <el-form-item label="级别:" label-width="120px" prop="level">
+          <el-select v-model="form.level" placeholder="请选择用户级别">
+            <el-option v-for="(item, index) in levelValues" :label="item" :value="String(index)" :key="index" />
           </el-select>
         </el-form-item>
         <el-form-item label="街道:" label-width="120px" prop="street">
-          <el-select v-model="addForm.street" placeholder="请选择用户街道">
+          <el-select v-model="form.street" placeholder="请选择用户街道">
             <el-option v-for="(item, index) in street" :label="item" :value="item" :key="index" />
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="add">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <!--  编辑  -->
-    <el-dialog title="编辑" :visible.sync="editVisible">
-      <el-form :model="currentData" ref="editForm" :rules="rules">
-        <el-form-item label="机构名称:" label-width="120px">
-          <span style="font-size: 14px">{{ currentData.name }}</span>
-        </el-form-item>
-        <el-form-item label="法人电话:" label-width="120px" prop="corporationPhone">
-          <el-input v-model="currentData.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
-        </el-form-item>
-        <el-form-item label="负责人电话:" label-width="120px">
-          <el-input v-model="currentData.managerPhone" autocomplete="off" placeholder="请输入负责人电话" />
-        </el-form-item>
-        <el-form-item label="床位数:" label-width="120px">
-          <el-input v-model="currentData.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
-        </el-form-item>
-        <el-form-item label="地址:" label-width="120px" prop="address">
-          <el-input v-model="currentData.address" autocomplete="off" placeholder="请输入用户地址" />
-        </el-form-item>
-        <el-form-item label="级别:" label-width="120px" prop="levelText">
-          <el-select v-model="currentData.levelText" placeholder="请选择用户级别">
-            <el-option v-for="(item, index) in levelValues" :label="item" :value="item" :key="index" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="街道:" label-width="120px" prop="street">
-          <el-select v-model="currentData.street" placeholder="请选择用户街道">
-            <el-option v-for="(item, index) in street" :label="item" :value="item" :key="index" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editSubmit">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { addOrg, getOrgList, updateOrg, deleteOrg } from '@/api/table'
+import { addOrg, deleteOrg, getOrgList, updateOrg } from '@/api/table'
 
 const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
@@ -173,35 +136,31 @@ export default {
           return callback(new Error('请输入正确的手机号'))
         }
       }
-    };
+    }
     return {
       rules: {
-        // managerPhone: [{ required: true, trigger: 'blur', validator: checkPhone, message: '机构名称不能为空'  }],
         name: [{ required: true, message: '机构名称不能为空' }],
-          managerPhone: [{ required: true, message: '机构名称不能为空'  }],
-        password: [{ required: true, message: '登录密码不能为空' }],
+        managerPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
         street: [{ required: true, message: '请选择街道', trigger: 'change' }],
-        levelText: [{ required: true, message: '请选择级别', trigger: 'change' }],
+        level: [{ required: true, message: '请选择级别', trigger: 'change' }],
         address: [{ required: true, message: '请填写地址' }],
       },
       total: 0,
-      params: {
-        offset: 1,
-        limit: 10,
-        search: '',
-      },
+      params: { offset: 1, limit: 10, search: '', },
       levelValues,
-      levelText: '',
       street,
       list: [],
       listLoading: true,
       dialogFormVisible: false,
-      editVisible: false,
-      currentData: {},
-      addForm: {
-        phone: '',
+      organizationId: '',
+      form: {
+        bednum: '',
         name: '',
-        password: '',
+        managerPhone: '',
+        corporationPhone: '',
+        address: '',
+        level: '',
+        street: '',
       },
     }
   },
@@ -212,84 +171,41 @@ export default {
     dialogFormVisible: {
       handler(val) {
         if (!val) {
-          this.$refs.addForm.resetFields()
+          this.$refs.form.resetFields()
         }
       },
-    },
-    editVisible: {
-      handler(val) {
-        if (!val) {
-          this.$refs.editForm.resetFields()
-        }
-      },
-    },
+    }
   },
 
   methods: {
-      download () {
-          import('@/utils/excel').then(excel => {
-              const header = ['手机号', '机构名称', '法人电话', '地址', '负责人电话', '床位数', '级别', '街道']
-              const filterVal = ['phone', 'name', 'corporationPhone', 'address', 'managerPhone', 'bednum', 'level', 'street']
-              const data = this.formatJson(filterVal, this.list)
-              excel.export_json_to_excel({
-                  header,
-                  data,
-                  filename: 'demo',
-                  autoWidth: true,
-                  bookType: 'xlsx',
-              })
-          })
-      },
-      async handleDeleteOrg (row) {
-          this.currentData = Object.assign({}, row, {levelText: this.levelValues[row.level]});
-          const params = {
-              isDelete: !row.isDeleted,
-              organizationId: this.currentData.organizationId
-          };
-          await deleteOrg(params);
-          this.$message({message: `${row.isDeleted ? `恢复成功` : `注销成功`}`, type: 'info'});
-          this.fetchData();
-          this.editVisible = false
-      },
-    formatJson(filterVal, data) {
-      return data.map(v => filterVal.map(j => v[j] ? v[j] : v[j]))
+    add(type, row) {
+      this.isEdit = type === '2'
+      this.organizationId = type === '2' ? row.organizationId : ''
+      if (type === '2') {
+        Object.keys(this.form).forEach(key => this.form[key] = row[key])
+      }
+      this.dialogFormVisible = true
     },
-    handleSizeChange(val) {
-      this.params.limit = val;
-      this.fetchData()
-    },
-    handleCurrentChange(val) {
-      this.params.offset = val;
-      this.fetchData()
-    },
-    add() {
-      this.$refs.addForm.validate(async (valid) => {
-        if (valid) {
-          await addOrg(this.addForm);
-          this.$message({ message: '新增机构成功', type: 'success' });
-          this.fetchData();
-          this.dialogFormVisible = false
-        } else {
-          return false
-        }
-      })
-    },
-    edit(row) {
-      this.editVisible = true;
+    async handleDeleteOrg(row) {
       this.currentData = Object.assign({}, row, { levelText: this.levelValues[row.level] })
+      const params = {
+        isDelete: !row.isDeleted,
+        organizationId: this.currentData.organizationId,
+      }
+      await deleteOrg(params)
+      this.$message({ message: `${row.isDeleted ? `恢复成功` : `注销成功`}`, type: 'info' })
+      this.fetchData()
+      this.editVisible = false
     },
-    editSubmit() {
-      this.$refs.editForm.validate(async (valid) => {
+    submit() {
+      const api = this.isEdit ? updateOrg : addOrg
+      const params = this.isEdit ? Object.assign({}, this.form, { organizationId: this.organizationId }) : this.form
+      this.$refs.form.validate(async (valid) => {
         if (valid) {
-          const params = Object.assign(
-            {},
-            this.$lo.pick(this.currentData, ['address', 'bednum', 'managerPhone', 'organizationId', 'street', 'corporationPhone']),
-            { level: String(this.levelValues.findIndex(item => item === this.currentData.levelText)) },
-          );
-          await updateOrg(params);
-          this.$message({ message: '编辑成功', type: 'success' });
-          this.fetchData();
-          this.editVisible = false
+          await api(params)
+          this.$message({ message: this.isEdit ? '编辑机构成功' : '新增机构成功', type: 'success' })
+          this.fetchData()
+          this.dialogFormVisible = false
         } else {
           return false
         }
@@ -302,6 +218,14 @@ export default {
         this.total = response.data.count
         this.listLoading = false
       })
+    },
+    handleSizeChange(val) {
+      this.params.limit = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.params.offset = val
+      this.fetchData()
     },
   },
 }
