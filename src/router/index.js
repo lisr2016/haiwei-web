@@ -58,6 +58,11 @@ export const constantRoutes = [
       name: 'Summary',
       component: () => import('@/views/summary/index'),
       meta: { title: '数据汇总', icon: 'dashboard' }
+    }, {
+      path: 'list',
+      name: 'List',
+      component: () => import('@/views/reportList/index'),
+      meta: { title: '报告详情', icon: 'el-icon-tickets' }
     }]
   },
 
@@ -72,7 +77,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/inspect/index'),
-        meta: { title: '巡检', icon: 'el-icon-message-solid' }
+        meta: { title: '考核', icon: 'el-icon-message-solid' }
       }
     ]
     // children: [
@@ -137,7 +142,22 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/notification/index'),
-        meta: { title: '通知', icon: 'el-icon-s-comment' }
+        meta: { title: '通知消息列表', icon: 'el-icon-s-comment' }
+      }
+    ]
+  },
+  
+  {
+    path: '/file',
+    component: Layout,
+    redirect: '/fileList/index',
+    meta: { icon: 'el-icon-folder' },
+    children: [
+      {
+        path: 'index',
+        name: 'Form',
+        component: () => import('@/views/fileList/index'),
+        meta: { title: '政策文件列表', icon: 'el-icon-upload' }
       }
     ]
   },
