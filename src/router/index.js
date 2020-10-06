@@ -65,41 +65,26 @@ export const constantRoutes = [
       meta: { title: '报告详情', icon: 'el-icon-tickets' }
     }]
   },
-
   {
     path: '/inspect',
     component: Layout,
     redirect: '/inspect/index',
     name: 'Inspection',
-    meta: { icon: 'el-icon-s-help' },
+    meta: {  title: '巡检考核', icon: 'el-icon-message-solid' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/inspect/index'),
-        meta: { title: '考核', icon: 'el-icon-message-solid' }
+        path: 'template',
+        name: 'template',
+        component: () => import('@/views/inspect/template'),
+        meta: { title: '考核模板', icon: 'el-icon-tickets' }
+      },
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/views/inspect/task'),
+        meta: { title: '考核指派', icon: 'el-icon-s-help' }
       }
     ]
-    // children: [
-    //   {
-    //     path: 'assign',
-    //     name: 'Assign',
-    //     component: () => import('@/views/assign/index'),
-    //     meta: { title: '巡检指派', icon: 'table' }
-    //   },
-    //   {
-    //     path: 'track',
-    //     name: 'Track',
-    //     component: () => import('@/views/track/index'),
-    //     meta: { title: '巡检跟踪', icon: 'tree' }
-    //   },
-    //   {
-    //     path: 'template',
-    //     name: 'Template',
-    //     component: () => import('@/views/template/index'),
-    //     meta: { title: '巡检模版', icon: 'tree' }
-    //   }
-    // ]
   },
   
   {
@@ -128,21 +113,6 @@ export const constantRoutes = [
         name: 'Form',
         component: () => import('@/views/userList/index'),
         meta: { title: '用户列表', icon: 'el-icon-user-solid' }
-      }
-    ]
-  },
-  
-  {
-    path: '/notification',
-    component: Layout,
-    redirect: '/notification/index',
-    meta: { icon: 'el-icon-s-comment' },
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/notification/index'),
-        meta: { title: '通知消息列表', icon: 'el-icon-s-comment' }
       }
     ]
   },
@@ -237,10 +207,10 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
-  mode: 'hash',
+  // mode: 'hash',
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  mode: 'history'
 })
 
 const router = createRouter()

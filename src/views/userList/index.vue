@@ -86,7 +86,7 @@
     <el-dialog title="更改密码" :visible.sync="editVisible">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="用户密码" label-width="120px" prop="password">
-          <el-input v-model="form.password" autocomplete="off" placeholder="请输入用户登录密码" />
+          <el-input v-model="form.password" autocomplete="off" placeholder="请输入新密码" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -121,10 +121,10 @@ export default {
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
         organizationId: [{ required: true, message: '机构名称不能为空' }],
-        password: [{ required: true, message: '登录密码不能为空' }],
+        password: [{ required: true, message: '密码不能为空' }],
       },
       editRules: {
-        password: [{ required: true, message: '登录密码不能为空' }],
+        password: [{ required: true, message: '密码不能为空' }],
       },
       selectList: [],
       total: 0,

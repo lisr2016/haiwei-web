@@ -1,11 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-box">
-      <el-button @click="add('1')">新增机构</el-button>
-      <div class="right">
-        <el-input placeholder="搜索机构名称" v-model="params.search" />
-        <el-button @click="fetchData">查找</el-button>
-      </div>
+      <el-button @click="add('1')">发布文件</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -20,14 +16,14 @@
           {{ (params.offset - 1) * params.limit + scope.$index  + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="机构名称" align="center">
+      <el-table-column label="标题" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="法人电话" align="center">
+      <el-table-column label="介绍" align="center">
         <template slot-scope="scope">
-          {{ scope.row.corporationPhone }}
+          {{ scope.row.content }}
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="地址" align="center">
@@ -43,16 +39,6 @@
       <el-table-column class-name="status-col" label="床位数" align="center">
         <template slot-scope="scope">
           {{ scope.row.bednum }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="级别">
-        <template slot-scope="scope">
-          {{ levelValues[scope.row.level] }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="街道">
-        <template slot-scope="scope">
-          {{ scope.row.street }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="状态">
@@ -82,7 +68,7 @@
       :total="total">
     </el-pagination>
 
-    <el-dialog title="新增机构" :visible.sync="dialogFormVisible">
+    <el-dialog title="发布文件" :visible.sync="dialogFormVisible">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="机构名称" label-width="120px" prop="name">
           <el-input v-model="form.name" :disabled="isEdit" autocomplete="off" placeholder="请输入用户机构名称" />

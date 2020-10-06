@@ -13,7 +13,7 @@
         <el-input
           ref="username"
           v-model="loginForm.phone"
-          placeholder="Username"
+          placeholder="请输入手机号"
           name="username"
           type="text"
           tabindex="1"
@@ -30,7 +30,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -53,27 +53,27 @@ export default {
   data() {
     const checkPhone = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('手机号不能为空'))
+        return callback(new Error(' 手机号不能为空'))
       } else {
         const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
         if (reg.test(value)) {
           callback()
         } else {
-          return callback(new Error('请输入正确的手机号'))
+          return callback(new Error(' 请输入正确的手机号'))
         }
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error(' 密码长度不能短于6位'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        phone: '18810698509',
-        password: '111111'
+        phone: '',
+        password: ''
       },
       loginRules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
