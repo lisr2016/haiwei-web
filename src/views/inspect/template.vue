@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-box">
-      <el-button @click="dialogFormVisible = true">新增模板</el-button>
+      <el-button @click="openDialog('1')">新增模板</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -13,7 +13,7 @@
     >
       <el-table-column align="center" width="60px">
         <template slot-scope="scope">
-          {{ (params.offset - 1) * params.limit + scope.$index  + 1 }}
+          {{ (params.offset - 1) * params.limit + scope.$index + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="模板名称" align="center">
@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="考核内容" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content }}</span>
+          <span>{{ scope.row.content.join('/') }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -31,7 +31,7 @@
         label="操作" align="center"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row)">修改模板</el-button>
+          <el-button type="text" size="small" @click="openDialog('2', scope.row)">修改模板</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,133 +50,139 @@
 
     <!--  新增  -->
     <el-dialog title="新增模板" :visible.sync="dialogFormVisible">
-      <el-form :model="addForm" ref="addForm" :rules="rules">
-        <el-form-item label="模板名称" label-width="120px" prop="phone">
-          <el-input v-model="addForm.phone" autocomplete="off" placeholder="请输入模板名称" />
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item label="模板名称" label-width="120px" prop="name">
+          <el-input v-model="form.name" autocomplete="off" placeholder="请输入模板名称" />
         </el-form-item>
-        <el-form-item label="考核内容" label-width="120px" prop="password">
-          <el-input v-model="addForm.password" autocomplete="off" placeholder="" />
+        <el-form-item v-for="item in num" :key="item" label="考核内容" label-width="120px">
+          <div style="display: flex; align-items: center">
+            <el-input v-model="contentForm[`num_${item}`]" autocomplete="off" placeholder="请输入考核内容，点击后方加号可添加多条考核内容" />
+            <i class="el-icon-plus" style="margin-left: 10px" @click="num++" />
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="add">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-    import { addTemplate, getTemplateList, deleteTemplate, updateTemplate } from '@/api/table'
+import { addTemplate, getTemplateList, updateTemplate } from '@/api/table'
 
-    export default {
-        data() {
-            return {
-                rules: {
-                    name: [{ required: true, message: '模板名称不能为空'}],
-                    content: [{ required: true, message: '机构名称不能为空' }],
-                },
-                selectList: [],
-                total: 0,
-                params: {
-                    offset: 1,
-                    limit: 10,
-                    search: '',
-                },
-                list: [],
-                listLoading: true,
-                dialogFormVisible: false,
-                editVisible: false,
-                loading: false,
-                currentData: {},
-                addForm: {
-                    phone: '',
-                    organizationId: '',
-                    password: '',
-                },
-                form: { password: '' },
-            }
-        },
-        created() {
-            this.fetchData()
-        },
-        watch: {
-            dialogFormVisible: {
-                handler(val) {
-                    if (!val) {
-                        this.$refs.addForm.resetFields()
-                    }
-                },
-            },
-            editVisible: {
-                handler(val) {
-                    if (!val) {
-                        this.$refs.form.resetFields()
-                    }
-                },
-            },
-        },
-
-        methods: {
-            remoteMethod(query) {
-                if (query !== '') {
-                    this.loading = true;
-                    getTemplateList({ search: query }).then(res => {
-                        this.loading = false;x
-                        this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
-                    })
-                } else {
-                    this.selectList = [];
-                }
-            },
-            edit(e){
-                this.editVisible = true
-                this.userId = e.id
-            },
-            submit() {
-                this.$refs.form.validate(async (valid) => {
-                    if (valid) {
-                        await ({ userId: this.userId, password: this.form.password })
-                        this.$message({ message: '修改密码成功', type: 'success' })
-                        this.fetchData()
-                        this.editVisible = false
-                    } else {
-                        return false
-                    }
-                })
-            },
-            handleSizeChange(val) {
-                this.params.limit = val
-                this.fetchData()
-            },
-            handleCurrentChange(val) {
-                this.params.offset = val
-                this.fetchData()
-            },
-            add() {
-                this.$refs.addForm.validate(async (valid) => {
-                    if (valid) {
-                        await addTemplate(this.addForm)
-                        this.$message({ message: '新增模板成功', type: 'success' })
-                        this.fetchData()
-                        this.dialogFormVisible = false
-                    } else {
-                        return false
-                    }
-                })
-            },
-            fetchData() {
-                this.listLoading = false
-                getTemplateList(this.params).then(response => {
-                    this.list = response.data.list
-                    this.total = response.data.count
-                    this.listLoading = false
-                })
-            },
-        },
+export default {
+  data() {
+    return {
+      rules: {
+        name: [{ required: true, message: '模板名称不能为空' }],
+        content: [{ required: true, message: '考核内容不能为空' }],
+      },
+      selectList: [],
+      total: 0,
+      params: {
+        offset: 1,
+        limit: 10,
+      },
+      list: [],
+      listLoading: true,
+      dialogFormVisible: false,
+      loading: false,
+      currentData: {},
+      form: {
+        name: '',
+        content: [],
+      },
+      contentForm: {},
+      num: 1,
+      id: '',
+      isEdit: false,
     }
+  },
+  created() {
+    this.fetchData()
+  },
+  watch: {
+    dialogFormVisible: {
+      handler(val) {
+        if (!val) {
+          this.$refs.form.resetFields()
+        }
+      },
+    }
+  },
+
+  methods: {
+    openDialog(type, row) {
+      this.isEdit = type === '2'
+      this.form.name = this.isEdit ? row.name : ''
+      this.num = this.isEdit ? row.content.length : 1
+      if (type === '2') {
+        row.content.forEach((item, index) => {
+          this.$set(this.contentForm, `num_${index + 1}`, item)
+        })
+        this.id = row.id
+      } else {
+        this.contentForm = {}
+      }
+      this.dialogFormVisible = true
+    },
+    remoteMethod(query) {
+      if (query !== '') {
+        this.loading = true
+        getTemplateList({ search: query }).then(res => {
+          this.loading = false
+          this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
+        })
+      } else {
+        this.selectList = []
+      }
+    },
+
+    handleSizeChange(val) {
+      this.params.limit = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.params.offset = val
+      this.fetchData()
+    },
+    submit() {
+      const api = this.isEdit ? updateTemplate : addTemplate
+      this.form.content = Object.values(this.contentForm)
+      if (!this.form.content.length) return this.$message({ message: '请填写模版内容', type: 'error' })
+      const params = this.isEdit ? _.assign({}, this.form, { templateId: this.id }) : this.form
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+          await api(params)
+          this.$message({ message: `${this.isEdit ? '编辑' : '新增'}模版成功`, type: 'success' })
+          this.fetchData()
+          this.dialogFormVisible = false
+          this.num = 1
+
+          this.contentForm = {}
+        } else {
+          return false
+        }
+      })
+    },
+    fetchData() {
+      this.listLoading = false
+      getTemplateList(this.params).then(response => {
+        this.list = response.data.list
+        this.total = response.data.count
+        this.listLoading = false
+      })
+    },
+  },
+}
 </script>
 <style lang="scss" scoped>
+  .el-table .cell {
+    white-space: pre-line;
+  }
+
   .search-box {
     width: 100%;
     display: flex;

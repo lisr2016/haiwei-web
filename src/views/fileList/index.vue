@@ -53,7 +53,7 @@
       :total="total">
     </el-pagination>
 
-    <el-dialog title="发布文件" :visible.sync="dialogFormVisible">
+    <el-dialog :title="isEdit ? '编辑发布' : '发布文件'" :visible.sync="dialogFormVisible">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="标题" label-width="120px" prop="title">
           <el-input v-model="form.title" autocomplete="off" placeholder="请输入标题" />
@@ -71,7 +71,7 @@
             :before-remove="beforeRemove"
             :on-success="handleSuccess"
             accept=".xlsx,.pdf,.xls,.docx,.PDF,.doc">
-            <el-button size="small" type="primary">点击上传</el-button>
+            <el-button size="small" type="primary">{{ isEdit ? '重新上传': '点击上传' }}</el-button>
           </el-upload>
         </el-form-item>
       </el-form>

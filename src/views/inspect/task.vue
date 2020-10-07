@@ -92,7 +92,7 @@
 </template>
 
 <script>
-    import { addTask, getTask, deleteTask } from '@/api/table'
+import { addTask, getTask, deleteTask, getTemplateList } from '@/api/table'
 
     export default {
         data() {
@@ -155,7 +155,7 @@
                 }
             },
             edit(e){
-                this.editVisible = true
+                this.dialogFormVisible = true
                 this.userId = e.id
             },
             submit() {
