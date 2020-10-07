@@ -38,4 +38,12 @@ export function getSummaryTotal(params) {
   })
 }
 
+export function getSummaryScreen(data) {
+  return request({
+    url: '/cms/summary/screen',
+    method: 'post',
+    data
+  })
+}
+
 

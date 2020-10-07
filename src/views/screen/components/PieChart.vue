@@ -21,6 +21,20 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    legend: {
+      type: Array,
+      default: () => ['厨余垃圾', '可回收物垃圾', '有害垃圾', '其他垃圾', '医疗垃圾']
+    },
+    value: {
+      type: Array,
+      default: () => [
+        { value: 320, name: '厨余垃圾' },
+        { value: 220, name: '可回收物垃圾' },
+        { value: 120, name: '有害垃圾' },
+        { value: 420, name: '其他垃圾' },
+        { value: 520, name: '医疗垃圾' },
+      ]
     }
   },
   data() {
@@ -52,7 +66,7 @@ export default {
         legend: {
           left: 'center',
           bottom: '10',
-          data: ['医疗废物', '厨余废物', '可回收物', '有害垃圾', '其他垃圾', '大件废弃物品']
+          data: this.legend
         },
         series: [
           {
@@ -61,14 +75,7 @@ export default {
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
-            data: [
-              { value: 320, name: '医疗废物' },
-              { value: 240, name: '厨余废物' },
-              { value: 149, name: '可回收物' },
-              { value: 100, name: '有害垃圾' },
-              { value: 59, name: '其他垃圾' },
-              { value: 59, name: '大件废弃物品' },
-            ],
+            data: this.value,
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }

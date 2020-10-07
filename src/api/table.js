@@ -144,3 +144,27 @@ export function deleteTask(data) {
     data
   })
 }
+
+export function getPolicyList(data) {
+  return request({
+    url: '/cms/get/policy/list',
+    method: 'post',
+    data
+  })
+}
+
+export function addPolicyList(data) {
+  return request({
+    url: '/cms/new/policy',
+    method: 'post',
+    data
+  })
+}
+
+export function updatePolicyList(data) {
+  return request({
+    url: '/cms/update/policy/info',
+    method: 'post',
+    data
+  })
+}
