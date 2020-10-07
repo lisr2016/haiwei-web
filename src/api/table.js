@@ -89,3 +89,58 @@ export function updateUserInfo(data) {
   })
 }
 
+export function getTemplateList(data) {
+  return request({
+    url: '/cms/get/assess/template/list',
+    method: 'post',
+    data
+  })
+}
+
+export function addTemplate(data) {
+  return request({
+    url: '/cms/new/assess/template',
+    method: 'post',
+    data
+  })
+}
+
+export function updateTemplate(data) {
+  return request({
+    url: '/cms/update/assess/template',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteTemplate(data) {
+  return request({
+    url: '/cms/delete/assess/template',
+    method: 'post',
+    data
+  })
+}
+
+export function getTaskList(data) {
+  return request({
+    url: '/cms/get/assess/task/list',
+    method: 'post',
+    data
+  })
+}
+
+export function addTask(data) {
+  return request({
+    url: '/cms/new/assess/task',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteTask(data) {
+  return request({
+    url: '/cms/delete/assess/task',
+    method: 'post',
+    data
+  })
+}

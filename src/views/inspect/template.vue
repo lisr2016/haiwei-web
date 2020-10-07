@@ -1,11 +1,7 @@
 <template>
   <div class="app-container">
     <div class="search-box">
-      <el-button @click="add('1')">新增机构</el-button>
-      <div class="right">
-        <el-input placeholder="搜索机构名称" v-model="params.search" />
-        <el-button @click="fetchData">查找</el-button>
-      </div>
+      <el-button @click="dialogFormVisible = true">新增模板</el-button>
     </div>
     <el-table
       v-loading="listLoading"
@@ -20,53 +16,22 @@
           {{ (params.offset - 1) * params.limit + scope.$index  + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="机构名称" align="center">
+      <el-table-column label="模板名称" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="法人电话" align="center">
+      <el-table-column label="考核内容" align="center">
         <template slot-scope="scope">
-          {{ scope.row.corporationPhone }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="地址" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.address }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="负责人电话" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.managerPhone }}
-        </template>
-      </el-table-column>
-      <el-table-column class-name="status-col" label="床位数" align="center">
-        <template slot-scope="scope">
-          {{ scope.row.bednum }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="级别">
-        <template slot-scope="scope">
-          {{ levelValues[scope.row.level] }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="街道">
-        <template slot-scope="scope">
-          {{ scope.row.street }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="状态">
-        <template slot-scope="scope">
-          {{ scope.row.isDeleted?`已注销`:`正常` }}
+          <span>{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column
         fixed="right"
-        label="操作"
+        label="操作" align="center"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="add('2', scope.row)">编辑</el-button>
-          <el-button type="text" size="small" @click="handleDeleteOrg(scope.row)">{{ scope.row.isDeleted?`恢复`:`注销`}}</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row)">修改模板</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,87 +47,54 @@
       :total="total">
     </el-pagination>
 
-    <el-dialog title="新增机构" :visible.sync="dialogFormVisible">
-      <el-form :model="form" ref="form" :rules="rules">
-        <el-form-item label="机构名称" label-width="120px" prop="name">
-          <el-input v-model="form.name" :disabled="isEdit" autocomplete="off" placeholder="请输入用户机构名称" />
+
+    <!--  新增  -->
+    <el-dialog title="新增模板" :visible.sync="dialogFormVisible">
+      <el-form :model="addForm" ref="addForm" :rules="rules">
+        <el-form-item label="模板名称" label-width="120px" prop="phone">
+          <el-input v-model="addForm.phone" autocomplete="off" placeholder="请输入模板名称" />
         </el-form-item>
-        <el-form-item label="法人电话:" label-width="120px">
-          <el-input v-model="form.corporationPhone" autocomplete="off" placeholder="请输入用户法人电话" />
-        </el-form-item>
-        <el-form-item label="负责人电话:" label-width="120px" prop="managerPhone">
-          <el-input v-model="form.managerPhone" autocomplete="off" placeholder="请输入负责人电话" />
-        </el-form-item>
-        <el-form-item label="床位数:" label-width="120px">
-          <el-input v-model="form.bednum" autocomplete="off" type="number" placeholder="请输入床位数" />
-        </el-form-item>
-        <el-form-item label="地址:" label-width="120px" prop="address">
-          <el-input v-model="form.address" autocomplete="off" placeholder="请输入用户地址" />
-        </el-form-item>
-        <el-form-item label="级别:" label-width="120px" prop="level">
-          <el-select v-model="form.level" placeholder="请选择用户级别">
-            <el-option v-for="(item, index) in levelValues" :label="item" :value="String(template)" :key="template" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="街道:" label-width="120px" prop="street">
-          <el-select v-model="form.street" placeholder="请选择用户街道">
-            <el-option v-for="(item, index) in street" :label="item" :value="item" :key="template" />
-          </el-select>
+        <el-form-item label="考核内容" label-width="120px" prop="password">
+          <el-input v-model="addForm.password" autocomplete="off" placeholder="" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button type="primary" @click="add">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-    import { addOrg, deleteOrg, getOrgList, updateOrg } from '@/api/table'
+    import { addTemplate, getTemplateList, deleteTemplate, updateTemplate } from '@/api/table'
 
-    const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
-    const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
     export default {
         data() {
-            const checkPhone = (rule, value, callback) => {
-                if (!value) {
-                    return callback(new Error('联系方式不能为空'))
-                } else {
-                    const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
-                    if (reg.test(value)) {
-                        callback()
-                    } else {
-                        return callback(new Error('请输入正确的联系方式'))
-                    }
-                }
-            };
             return {
                 rules: {
-                    name: [{ required: true, message: '机构名称不能为空' }],
-                    managerPhone: [{ required: true, trigger: 'blur', validator: checkPhone }],
-                    street: [{ required: true, message: '请选择街道', trigger: 'change' }],
-                    level: [{ required: true, message: '请选择级别', trigger: 'change' }],
-                    address: [{ required: true, message: '请填写地址' }],
+                    name: [{ required: true, message: '模板名称不能为空'}],
+                    content: [{ required: true, message: '机构名称不能为空' }],
                 },
+                selectList: [],
                 total: 0,
-                params: { offset: 1, limit: 10, search: '', },
-                levelValues,
-                street,
+                params: {
+                    offset: 1,
+                    limit: 10,
+                    search: '',
+                },
                 list: [],
                 listLoading: true,
                 dialogFormVisible: false,
-                organizationId: '',
-                isEdit: false,
-                form: {
-                    bednum: '',
-                    name: '',
-                    managerPhone: '',
-                    corporationPhone: '',
-                    address: '',
-                    level: '',
-                    street: '',
+                editVisible: false,
+                loading: false,
+                currentData: {},
+                addForm: {
+                    phone: '',
+                    organizationId: '',
+                    password: '',
                 },
+                form: { password: '' },
             }
         },
         created() {
@@ -172,53 +104,45 @@
             dialogFormVisible: {
                 handler(val) {
                     if (!val) {
+                        this.$refs.addForm.resetFields()
+                    }
+                },
+            },
+            editVisible: {
+                handler(val) {
+                    if (!val) {
                         this.$refs.form.resetFields()
                     }
                 },
-            }
+            },
         },
 
         methods: {
-            add(type, row) {
-                this.isEdit = type === '2'
-                this.organizationId = type === '2' ? row.organizationId : ''
-                if (type === '2') {
-                    Object.keys(this.form).forEach(key => this.form[key] = row[key])
+            remoteMethod(query) {
+                if (query !== '') {
+                    this.loading = true;
+                    getTemplateList({ search: query }).then(res => {
+                        this.loading = false;x
+                        this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
+                    })
+                } else {
+                    this.selectList = [];
                 }
-                this.dialogFormVisible = true
             },
-            async handleDeleteOrg(row) {
-                this.currentData = Object.assign({}, row, { levelText: this.levelValues[row.level] })
-                const params = {
-                    isDelete: !row.isDeleted,
-                    organizationId: this.currentData.organizationId,
-                };
-                await deleteOrg(params);
-                this.$message({ message: `${row.isDeleted ? `恢复成功` : `注销成功`}`, type: 'info' })
-                this.fetchData()
-                this.editVisible = false
+            edit(e){
+                this.editVisible = true
+                this.userId = e.id
             },
             submit() {
-                const api = this.isEdit ? updateOrg : addOrg
-                const params = this.isEdit ? Object.assign({}, this.form, { organizationId: this.organizationId }) : this.form;
-                delete params.name;
                 this.$refs.form.validate(async (valid) => {
                     if (valid) {
-                        await api(params);
-                        this.$message({ message: this.isEdit ? '编辑机构成功' : '新增机构成功', type: 'success' })
-                        this.fetchData();
-                        this.dialogFormVisible = false
+                        await ({ userId: this.userId, password: this.form.password })
+                        this.$message({ message: '修改密码成功', type: 'success' })
+                        this.fetchData()
+                        this.editVisible = false
                     } else {
                         return false
                     }
-                })
-            },
-            fetchData() {
-                this.listLoading = false
-                getOrgList(this.params).then(response => {
-                    this.list = response.data.list
-                    this.total = response.data.count
-                    this.listLoading = false
                 })
             },
             handleSizeChange(val) {
@@ -228,6 +152,26 @@
             handleCurrentChange(val) {
                 this.params.offset = val
                 this.fetchData()
+            },
+            add() {
+                this.$refs.addForm.validate(async (valid) => {
+                    if (valid) {
+                        await addTemplate(this.addForm)
+                        this.$message({ message: '新增模板成功', type: 'success' })
+                        this.fetchData()
+                        this.dialogFormVisible = false
+                    } else {
+                        return false
+                    }
+                })
+            },
+            fetchData() {
+                this.listLoading = false
+                getTemplateList(this.params).then(response => {
+                    this.list = response.data.list
+                    this.total = response.data.count
+                    this.listLoading = false
+                })
             },
         },
     }
