@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column label="考核内容" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content.join('/') }}</span>
+          <span>{{ scope.row.content.join('\n') }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -179,8 +179,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .el-table .cell {
-    white-space: pre-line;
+  .el-table {
+    ::v-deep .cell {
+      white-space: pre-line;
+    }
   }
 
   .search-box {

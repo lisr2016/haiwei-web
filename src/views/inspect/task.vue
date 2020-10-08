@@ -11,44 +11,49 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" width="60px">
+      <el-table-column align="center" width="60px" fixed>
         <template slot-scope="scope">
-          {{ (params.offset - 1) * params.limit + scope.$index  + 1 }}
+          {{ (params.offset - 1) * params.limit + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="考核类型" align="center">
+      <el-table-column label="考核名称" align="center" fixed>
         <template slot-scope="scope">
-          {{ scope.row.type }}
+          {{ scope.row.name }}
         </template>
       </el-table-column>
-      <el-table-column label="模板名称" align="center">
+      <el-table-column label="考核类型" align="center" fixed>
         <template slot-scope="scope">
-          <span>{{ scope.row.templateId }}</span>
+          {{ scope.row.type === '1' ? '自审' : '互审' }}
         </template>
       </el-table-column>
-      <el-table-column label="开始时间" align="center">
+      <el-table-column label="开始时间" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="结束时间" align="center">
+      <el-table-column label="结束时间" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.endTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核目标" align="center">
+      <el-table-column label="考核目标" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位" align="center">
+      <el-table-column label="考核内容" min-width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.target }}</span>
+          <div v-for="(item, index) in scope.row.content" :key="index" @click="getDetail(scope.row, index)" :class="scope.row.assessorDone || scope.row.assesseeDone ? 'active' : ''">{{ item }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="考核对象" align="center">
+      <el-table-column label="考核单位" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.target }}</span>
+          <span>{{ scope.row.assessorOrgName }}({{ scope.row.assessorDone ? '已提交' : '未提交' }})</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="考核对象" align="center" min-width="150px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.assesseeOrgName }}({{ scope.row.assesseeDone ? '已提交' : '未提交' }})</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -56,7 +61,7 @@
         label="操作" align="center"
       >
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row)">修改模板</el-button>
+          <el-button type="text" size="small" style="color: red" @click="deleteRow(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -74,134 +79,204 @@
 
 
     <!--  新增  -->
-    <el-dialog title="新增模板" :visible.sync="dialogFormVisible">
-      <el-form :model="addForm" ref="addForm" :rules="rules">
-        <el-form-item label="模板名称" label-width="120px" prop="phone">
-          <el-input v-model="addForm.phone" autocomplete="off" placeholder="请输入模板名称" />
+    <el-dialog title="新增考核" :visible.sync="dialogFormVisible">
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item label="考核类型" label-width="120px">
+          <el-radio-group v-model="form.type">
+            <el-radio label="1">自审</el-radio>
+            <el-radio label="2">互审</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="考核内容" label-width="120px" prop="password">
-          <el-input v-model="addForm.password" autocomplete="off" placeholder="" />
+        <el-form-item label="考核名称" label-width="120px" prop="name">
+          <el-input v-model="form.name" autocomplete="off" placeholder="请填写考核名称" />
+        </el-form-item>
+        <el-form-item label="考核时间" label-width="120px" prop="time">
+          <el-date-picker
+            style="width: 100%;"
+            v-model="form.time"
+            type="daterange"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :default-time="['00:00:00', '23:59:59']">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="考核目标" label-width="120px" prop="target">
+          <el-input v-model="form.target" autocomplete="off" placeholder="请填写考核目标" />
+        </el-form-item>
+        <el-form-item label="考核模版" label-width="120px" prop="templateId">
+          <el-select v-model="form.templateId" style="width: 100%;" placeholder="请选择">
+            <el-option
+              v-for="item in templateList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="考核单位" label-width="120px" prop="assessorId">
+          <el-select v-model="form.assessorId" style="width: 100%;" filterable remote reserve-keyword placeholder="请输入关键词搜索机构" :loading="loading" :remote-method="remoteMethod">
+            <el-option
+              v-for="item in selectList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="form.type === '2'" label="考核对象" label-width="120px" prop="assesseeId">
+          <el-select v-model="form.assesseeId" filterable remote reserve-keyword placeholder="请输入关键词搜索机构" :loading="loading" :remote-method="remoteMethod">
+            <el-option
+              v-for="item in selectList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="add">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
       </div>
+    </el-dialog>
+
+
+    <el-dialog title="考核项详情" :visible.sync="contentDetailVisible">
+      lxx
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { addTask, getTask, deleteTask, getTemplateList } from '@/api/table'
+import { getTemplateList, getTaskList, getOrgList, addTask, deleteTask } from '@/api/table'
 
-    export default {
-        data() {
-            return {
-                rules: {
-                    name: [{ required: true, message: '模板名称不能为空'}],
-                    content: [{ required: true, message: '机构名称不能为空' }],
-                },
-                selectList: [],
-                total: 0,
-                params: {
-                    offset: 1,
-                    limit: 10,
-                    search: '',
-                },
-                list: [],
-                listLoading: true,
-                dialogFormVisible: false,
-                editVisible: false,
-                loading: false,
-                currentData: {},
-                addForm: {
-                    phone: '',
-                    organizationId: '',
-                    password: '',
-                },
-                form: { password: '' },
-            }
-        },
-        created() {
-            this.fetchData()
-        },
-        watch: {
-            dialogFormVisible: {
-                handler(val) {
-                    if (!val) {
-                        this.$refs.addForm.resetFields()
-                    }
-                },
-            },
-            editVisible: {
-                handler(val) {
-                    if (!val) {
-                        this.$refs.form.resetFields()
-                    }
-                },
-            },
-        },
-
-        methods: {
-            remoteMethod(query) {
-                if (query !== '') {
-                    this.loading = true;
-                    getTemplateList({ search: query }).then(res => {
-                        this.loading = false;x
-                        this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
-                    })
-                } else {
-                    this.selectList = [];
-                }
-            },
-            edit(e){
-                this.dialogFormVisible = true
-                this.userId = e.id
-            },
-            submit() {
-                this.$refs.form.validate(async (valid) => {
-                    if (valid) {
-                        await ({ userId: this.userId, password: this.form.password })
-                        this.$message({ message: '修改密码成功', type: 'success' })
-                        this.fetchData()
-                        this.editVisible = false
-                    } else {
-                        return false
-                    }
-                })
-            },
-            handleSizeChange(val) {
-                this.params.limit = val
-                this.fetchData()
-            },
-            handleCurrentChange(val) {
-                this.params.offset = val
-                this.fetchData()
-            },
-            add() {
-                this.$refs.addForm.validate(async (valid) => {
-                    if (valid) {
-                        await addTemplate(this.addForm)
-                        this.$message({ message: '新增模板成功', type: 'success' })
-                        this.fetchData()
-                        this.dialogFormVisible = false
-                    } else {
-                        return false
-                    }
-                })
-            },
-            fetchData() {
-                this.listLoading = false
-                getTemplateList(this.params).then(response => {
-                    this.list = response.data.list
-                    this.total = response.data.count
-                    this.listLoading = false
-                })
-            },
-        },
+export default {
+  data() {
+    return {
+      rules: {
+        target: [{ required: true, message: '考核目标不能为空' }],
+        name: [{ required: true, message: '考核名称不能为空' }],
+        assessorId: [{ required: true, message: '考核单位不能为空' }],
+        assesseeId: [{ required: true, message: '考核对象不能为空' }],
+        templateId: [{ required: true, message: '考核模版不能为空' }],
+        time: [{ required: true, message: '请选择考核开始/结束日期', trigger: 'change' }],
+      },
+      selectList: [],
+      total: 0,
+      params: { offset: 1, limit: 10 },
+      list: [],
+      listLoading: true,
+      dialogFormVisible: false,
+      editVisible: false,
+      loading: false,
+      form: {
+        type: '1',
+        name: '',
+        startTime: '',
+        endTime: '',
+        target: '',
+        assessorId: '',
+        assesseeId: '',
+        time: ''
+      },
+      contentDetailVisible: false,
+      coontentDetail: null,
+      templateList: [],
     }
+  },
+  created() {
+    this.fetchData()
+    getTemplateList(this.params).then(response => {
+      this.templateList = response.data.list.map(item => ({ label: item.name, value: item.id }))
+    })
+  },
+  watch: {
+    dialogFormVisible: {
+      handler(val) {
+        if (!val) {
+          this.$refs.form.resetFields()
+        }
+      },
+    },
+    'form.time': {
+      handler(val) {
+        if (val && val.length) {
+          this.form.startTime = val[0]
+          this.form.endTime = val[1]
+        }
+      }
+    }
+  },
+
+  methods: {
+    deleteRow(id) {
+      deleteTask({ id }).then(() => {
+        this.$message({ message: '删除成功', type: 'success' })
+        this.fetchData()
+      })
+    },
+    remoteMethod(query) {
+      if (query !== '') {
+        this.loading = true;
+        getOrgList({ search: query }).then(res => {
+          this.loading = false
+          this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
+        })
+      } else {
+        this.selectList = [];
+      }
+    },
+    submit() {
+      this.$refs.form.validate(async (valid) => {
+        if (valid) {
+          const params =  _.omit(this.form, this.form.type === '1' ? ['time', 'assesseeId'] : 'time')
+          await addTask(params)
+          this.$message({ message: '添加成功', type: 'success' })
+          this.fetchData()
+          Object.keys(this.form).forEach(key => {
+            this.form[key] = key === 'type' ? '1' : ''
+          })
+          this.dialogFormVisible = false
+        } else {
+          return false
+        }
+      })
+    },
+    getDetail(row, index) {
+      console.log(row)
+      console.log(index)
+      const { assesseeDone, assessorDone } = row
+      if (assessorDone || assesseeDone) {
+        this.contentDetailVisible = true
+        this.coontentDetail = row
+      } else {
+        return false
+      }
+    },
+    handleSizeChange(val) {
+      this.params.limit = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.params.offset = val
+      this.fetchData()
+    },
+    fetchData() {
+      this.listLoading = false
+      getTaskList(this.params).then(response => {
+        this.list = response.data.list
+        this.total = response.data.count
+        this.listLoading = false
+      })
+    },
+  },
+}
 </script>
 <style lang="scss" scoped>
+  .active {
+    color: #409EFF;
+    cursor: pointer
+  }
   .search-box {
     width: 100%;
     display: flex;
@@ -215,10 +290,6 @@ import { addTask, getTask, deleteTask, getTemplateList } from '@/api/table'
         width: 300px;
         margin-right: 10px;
       }
-    }
-
-    .el-button {
-      width: 100px;
     }
 
   }
