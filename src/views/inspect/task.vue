@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { addTask, getTask, deleteTask, getTemplateList } from '@/api/table'
+import { addTask, getTask, deleteTask } from '@/api/table'
 
     export default {
         data() {
@@ -146,7 +146,7 @@ import { addTask, getTask, deleteTask, getTemplateList } from '@/api/table'
             remoteMethod(query) {
                 if (query !== '') {
                     this.loading = true;
-                    getTemplateList({ search: query }).then(res => {
+                    getTask({ search: query }).then(res => {
                         this.loading = false;x
                         this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
                     })
@@ -192,7 +192,7 @@ import { addTask, getTask, deleteTask, getTemplateList } from '@/api/table'
             },
             fetchData() {
                 this.listLoading = false
-                getTemplateList(this.params).then(response => {
+                getTask(this.params).then(response => {
                     this.list = response.data.list
                     this.total = response.data.count
                     this.listLoading = false
