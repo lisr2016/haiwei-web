@@ -17,6 +17,7 @@
     "dayjs": "^1.8.36",
     "echarts": "4.2.1",
     "element-ui": "2.13.2",
+    "exceljs": "^4.1.1",
     "file-saver": "2.0.1",
     "js-cookie": "2.2.0",
     "lodash": "^4.17.20",

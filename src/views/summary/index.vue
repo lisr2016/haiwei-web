@@ -33,6 +33,8 @@
 <script>
 import { getDomesticDaily, getDomesticMonthly, getDomesticWeekly, getMedicMonthly, getSummaryTotal } from '@/api/summary'
 import { getWeeks } from '@/utils'
+import {saveAs} from 'file-saver'
+import ExcelTable from '@/utils/tableUtil'
 
 export default {
   name: 'Dashboard',
@@ -50,6 +52,7 @@ export default {
       cardData: {},
       loading: true,
       api: getDomesticDaily,
+      Excel: null
     }
   },
   computed: {
@@ -146,6 +149,26 @@ export default {
         return 0
       }
     },
+    downloadData() {
+      if (!this.list.length) return []
+      const header = [
+        { label: `${_.get(this.card, `${this.active}.label`)}处置情况报告`, minWidth: '320', prop: 'label' },
+        { label: '数量', minWidth: '220', prop: 'num' },
+        { label: '备注', minWidth: '220', prop: 'desc' },
+      ]
+      const data = []
+      this.list.forEach(item => {
+        item.child.forEach(i => {
+          data.push({ label: i.label, num: this.cardData[i.id] })
+        })
+      })
+      const total = this.add(data)
+      data.push({ label: '总计', num: total })
+      return [{ header, data }]
+    }
+  },
+  async created() {
+    this.Excel = await import(/* webpackChunkName: "exceljs" */'exceljs')
   },
   mounted() {
     getSummaryTotal().then(res => {
@@ -182,24 +205,42 @@ export default {
     },
   },
   methods: {
-    download() {
-      const header = []
-      const body = []
-      this.list.forEach(item => {
-        item.child.forEach(child => {
-          header.push(child.label)
-          body.push(this.cardData[child.id])
-        })
+    add(arr) {
+      let s = 0;
+      for (let i = arr.length - 1; i >= 0; i--) {
+        s += arr[i].num;
+      }
+      return s;
+    },
+    async download() {
+      // demo 数据格式
+      // const header = [
+      //   { label: '姓名', width: '120', prop: 'name' },
+      //   { label: '年龄', width: '120', prop: 'age' },
+      //   { label: '电话', width: '120', prop: 'tel' },
+      //   { label: '身高', width: '120', prop: 'high' },
+      // ]
+      // const data = [
+      //   { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
+      //   { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
+      //   { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
+      //   { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
+      // ]
+      await this.makeExcel(this.downloadData, _.get(this.card, `${this.active}.label`))
+      this.$message.success('下载成功！')
+    },
+    async makeExcel(downloadData, name) {
+      const wb = new this.Excel.Workbook()
+      this.$lo.each(downloadData, sheet => {
+        const ws = wb.addWorksheet(sheet.name)
+        const table = new ExcelTable(this.$lo.cloneDeep(sheet.header), sheet.data, sheet.title || name, ws, sheet.desc)
+        table.setToExcel()
       })
-      import('@/utils/excel').then(excel => {
-        excel.export_json_to_excel({
-          header,
-          data: [body],
-          filename: this.card[this.active].label,
-          autoWidth: true,
-          bookType: 'xlsx',
-        })
-      })
+
+
+      const buffer = await wb.xlsx.writeBuffer()
+
+      saveAs(new Blob([buffer], {type: "application/octet-stream"}), `${name}.xlsx`)
     },
     getData() {
       this.loading = true
@@ -226,12 +267,11 @@ export default {
         margin: 20px 0;
 
         .text {
-          width: 130px;
+          width: 170px;
         }
 
         .el-progress {
-          width: calc(100% - 130px);
-          /*margin-left: 20px;*/
+          width: calc(100% - 170px);
         }
       }
 
