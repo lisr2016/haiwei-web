@@ -35,12 +35,19 @@
           {{ scope.row.orgInfo.initialized?`已完成`:`未完成` }}
         </template>
       </el-table-column>
+      <el-table-column label="状态" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.isDeleted ? '注销' : '正常' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
       >
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="edit(scope.row)">修改密码</el-button>
+          <el-button v-if="!scope.row.isDeleted" type="text" size="small" @click="deleteRow(scope.row.id, true)">注销</el-button>
+          <el-button v-else type="text" size="small" @click="deleteRow(scope.row.id, false)">恢复</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -84,9 +91,12 @@
     </el-dialog>
 
     <el-dialog title="更改密码" :visible.sync="editVisible">
-      <el-form :model="form" ref="form" :rules="rules">
+      <el-form :model="form" ref="form" :rules="editRules">
         <el-form-item label="用户密码" label-width="120px" prop="password">
           <el-input v-model="form.password" autocomplete="off" placeholder="请输入新密码" />
+        </el-form-item>
+        <el-form-item label="确认密码" label-width="120px" prop="psw">
+          <el-input v-model="form.psw" autocomplete="off" placeholder="请再次输入新密码" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -99,7 +109,7 @@
 </template>
 
 <script>
-import { addUser, getUserList, updateUserInfo, getOrgList } from '@/api/table'
+import { addUser, getUserList, updateUserInfo, getOrgList, deleteUser } from '@/api/table'
 
 const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
@@ -125,6 +135,7 @@ export default {
       },
       editRules: {
         password: [{ required: true, message: '密码不能为空' }],
+        psw: [{ required: true, message: '密码不能为空' }],
       },
       selectList: [],
       total: 0,
@@ -149,7 +160,7 @@ export default {
         organizationId: '',
         password: '',
       },
-      form: { password: '' },
+      form: { password: '', psw: '' },
     }
   },
   created() {
@@ -188,7 +199,17 @@ export default {
       this.editVisible = true
       this.userId = e.id
     },
+    deleteRow(userId, isDelete) {
+      deleteUser({ userId, isDelete }).then(() => {
+        this.$message({ message: `${isDelete ? '注销' : '恢复'}成功`, type: 'success' })
+        this.fetchData()
+      })
+    },
     submit() {
+      if (this.form.password !== this.form.psw) {
+        this.$message({ message: '两次密码不一致，请确认', type: 'error' })
+        return
+      }
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           await updateUserInfo({ userId: this.userId, password: this.form.password })

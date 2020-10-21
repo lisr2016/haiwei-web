@@ -54,7 +54,7 @@
         <el-form-item label="模板名称" label-width="120px" prop="name">
           <el-input v-model="form.name" autocomplete="off" placeholder="请输入模板名称" />
         </el-form-item>
-        <el-form-item v-for="item in num" :key="item" label="考核内容" label-width="120px">
+        <el-form-item v-for="(item, index) in num" :key="item" :label="!index ? '考核内容' : ''" label-width="120px">
           <div style="display: flex; align-items: center">
             <el-input v-model="contentForm[`num_${item}`]" autocomplete="off" placeholder="请输入考核内容，点击后方加号可添加多条考核内容" />
             <i class="el-icon-plus" style="margin-left: 10px" @click="num++" />

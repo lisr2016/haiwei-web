@@ -65,9 +65,11 @@
           <el-upload
             class="upload-demo"
             ref="upload"
+            :data="uploadParams"
             action="https://chiateocean.com.cn/hdhq/cms/upload/file"
             :file-list="form.url ? [{ url: form.url, name: form.filename }] : []"
             :headers="{ token }"
+            :before-upload="beforeAvatarUpload"
             :before-remove="beforeRemove"
             :on-success="handleSuccess"
             accept=".xlsx,.pdf,.xls,.docx,.PDF,.doc">
@@ -109,6 +111,7 @@ export default {
         content: '',
         filename: '',
       },
+      uploadParams: { filename: '' }
     }
   },
   created() {
@@ -125,6 +128,9 @@ export default {
   },
 
   methods: {
+    beforeAvatarUpload(file) {
+      this.uploadParams.filename = file.name
+    },
     beforeRemove(file) {
       return this.$confirm(`确定移除 ${ file.name }？`);
     },

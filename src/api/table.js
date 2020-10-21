@@ -168,3 +168,11 @@ export function updatePolicyList(data) {
     data
   })
 }
+
+export function deleteUser(data) {
+  return request({
+    url: '/cms/delete/user',
+    method: 'post',
+    data
+  })
+}
