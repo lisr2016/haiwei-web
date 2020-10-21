@@ -28,12 +28,12 @@
       </el-table-column>
       <el-table-column label="开始时间" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.startTime }}</span>
+          <span>{{ formatDate(scope.row.startTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="结束时间" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.endTime }}</span>
+          <span>{{ formatDate(scope.row.endTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="考核目标" align="center" min-width="150px">
@@ -149,7 +149,7 @@
 
 <script>
 import { getTemplateList, getTaskList, getOrgList, addTask, deleteTask } from '@/api/table'
-
+import dayjs from 'dayjs'
 export default {
   data() {
     return {
@@ -209,12 +209,15 @@ export default {
   },
 
   methods: {
-    deleteRow(id) {
-      deleteTask({ taskId:id }).then(() => {
-        this.$message({ message: '删除成功', type: 'success' })
-        this.fetchData()
-      })
-    },
+      formatDate (time) {
+          return dayjs(new Date(time)).add(8,'hour').format('YYYY-MM-DD');
+      },
+      deleteRow (id) {
+          deleteTask({taskId: id}).then(() => {
+              this.$message({message: '删除成功', type: 'success'})
+              this.fetchData()
+          })
+      },
     remoteMethod(query) {
       if (query !== '') {
         this.loading = true;
@@ -243,8 +246,6 @@ export default {
       })
     },
     getDetail(row, index) {
-      console.log(row)
-      console.log(index)
       const { assesseeDone, assessorDone } = row
       if (assessorDone || assesseeDone) {
         this.contentDetailVisible = true
