@@ -3,7 +3,7 @@
     <div class="search-box">
       <el-button @click="dialogFormVisible = true">新增用户</el-button>
       <div class="right">
-        <el-input placeholder="搜索用户手机号或者所属机构名称" v-model="params.search" />
+        <el-input placeholder="搜索用户手机号或者所属机构名称" @keyup.enter.native="fetchData" v-model="params.search" />
         <el-button @click="fetchData">查找</el-button>
       </div>
     </div>
