@@ -47,7 +47,7 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="级别">
         <template slot-scope="scope">
-          {{ levelValues[scope.row.level] }}
+          {{ levelValues[scope.row.level - 1] }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="街道">
@@ -188,7 +188,7 @@ export default {
       this.dialogFormVisible = true
     },
     async handleDeleteOrg(row) {
-      this.currentData = Object.assign({}, row, { levelText: this.levelValues[row.level] })
+      this.currentData = Object.assign({}, row, { levelText: this.levelValues[row.level - 1] })
       const params = {
         isDelete: !row.isDeleted,
         organizationId: this.currentData.organizationId,

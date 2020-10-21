@@ -210,7 +210,7 @@ export default {
 
   methods: {
     deleteRow(id) {
-      deleteTask({ id }).then(() => {
+      deleteTask({ taskId:id }).then(() => {
         this.$message({ message: '删除成功', type: 'success' })
         this.fetchData()
       })
