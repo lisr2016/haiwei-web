@@ -21,6 +21,18 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    barData: {
+      type: Array,
+      default: () => []
+    },
+    xData: {
+      type: Array,
+      default: () => []
+    },
+    legend: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -28,10 +40,13 @@ export default {
       chart: null
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+  watch: {
+    barData: {
+      deep: true,
+      handler(val) {
+        this.initChart()
+      },
+    },
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -42,6 +57,7 @@ export default {
   },
   methods: {
     initChart() {
+      console.log(this.barData)
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
@@ -59,11 +75,11 @@ export default {
           containLabel: true
         },
         legend: {
-          data: ['医疗废物', '厨余废物', '可回收物', '有害垃圾', '其他垃圾', '大件废弃物品']
+          data: this.legend
         },
         xAxis: [{
           type: 'category',
-          data: ['四月', '五月', '六月', '七月', '八月', '九月', '十月'],
+          data: this.xData,
           axisTick: {
             alignWithLabel: true
           }
@@ -75,40 +91,7 @@ export default {
           }
         }],
         // ['医疗废物', '厨余废物', '可回收物', '有害垃圾', '其他垃圾', '大件废弃物品']
-        series: [{
-          name: '医疗废物',
-          type: 'bar',
-          barWidth: '10%',
-          data: [79, 52, 200, 334, 390, 330, 220],
-        }, {
-          name: '厨余废物',
-          type: 'bar',
-          barWidth: '10%',
-          data: [80, 52, 200, 334, 390, 330, 220],
-        }, {
-          name: '可回收物',
-          type: 'bar',
-          barWidth: '10%',
-          data: [40, 62, 300, 434, 490, 430, 320],
-        },{
-          name: '有害垃圾',
-          type: 'bar',
-          
-          barWidth: '10%',
-          data: [30, 52, 200, 334, 390, 330, 220],
-        },{
-          name: '其他垃圾',
-          type: 'bar',
-          
-          barWidth: '10%',
-          data: [20, 42, 100, 234, 290, 130, 120],
-        },{
-          name: '大件废弃物品',
-          type: 'bar',
-          
-          barWidth: '10%',
-          data: [10, 62, 500, 634, 290, 730, 820],
-        }]
+        series: this.barData
       })
     }
   }

@@ -201,7 +201,7 @@ export default {
     submit() {
       const api = this.isEdit ? updateOrg : addOrg
       const params = this.isEdit ? Object.assign({}, this.form, { organizationId: this.organizationId }) : this.form;
-      delete params.name;
+      // delete params.name;
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           await api(params);

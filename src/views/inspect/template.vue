@@ -49,7 +49,7 @@
 
 
     <!--  新增  -->
-    <el-dialog title="新增模板" :visible.sync="dialogFormVisible">
+    <el-dialog :title="`${isEdit ? '编辑' : '新增'}模板`" :visible.sync="dialogFormVisible">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="模板名称" label-width="120px" prop="name">
           <el-input v-model="form.name" autocomplete="off" placeholder="请输入模板名称" />

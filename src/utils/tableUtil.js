@@ -28,14 +28,14 @@ export default class ExcelTable {
         cell.border = this.defaultBorder
       })
     })
-    const arr = [
-      { value: '填报人:', index: 5 },
-      { value: '联系电话:', index: 6 },
-      { value: '填报日期:', index: 7 },
-    ]
-    arr.forEach(item => {
-      this.setMsg(item)
-    })
+    // const arr = [
+    //   { value: '填报人:', index: 5 },
+    //   { value: '联系电话:', index: 6 },
+    //   { value: '填报日期:', index: 7 },
+    // ]
+    // arr.forEach(item => {
+    //   this.setMsg(item)
+    // })
     if(this.describe){
       this.setDescribe(this.describe)
     }
@@ -151,15 +151,15 @@ export default class ExcelTable {
     return column
   }
 
-  setMsg ({ value, index }) {
-    const length = this.data.length + index
-    const cell = this.worksheet.getCell(`E${length}`)
-    cell.value = value
-    cell.font = {size: 12, bold: true}
-    this.worksheet.mergeCells(`E${length}:I${length}`)
-    this.worksheet.getRow(1).height = 18
-    cell.alignment = cell.alignment || this.defaultAlignment
-  }
+  // setMsg ({ value, index }) {
+  //   const length = this.data.length + index
+  //   const cell = this.worksheet.getCell(`E${length}`)
+  //   cell.value = value
+  //   cell.font = {size: 12, bold: true}
+  //   this.worksheet.mergeCells(`E${length}:I${length}`)
+  //   this.worksheet.getRow(1).height = 18
+  //   cell.alignment = cell.alignment || this.defaultAlignment
+  // }
 
   setDescribe(desc){
     const firstSheet = this.worksheet

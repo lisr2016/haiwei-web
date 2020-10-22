@@ -24,17 +24,11 @@ export default {
     },
     legend: {
       type: Array,
-      default: () => ['厨余垃圾', '可回收物垃圾', '有害垃圾', '其他垃圾', '医疗垃圾']
+      default: () => []
     },
-    value: {
+    pieData: {
       type: Array,
-      default: () => [
-        { value: 320, name: '厨余垃圾' },
-        { value: 220, name: '可回收物垃圾' },
-        { value: 120, name: '有害垃圾' },
-        { value: 420, name: '其他垃圾' },
-        { value: 520, name: '医疗垃圾' },
-      ]
+      default: () => []
     }
   },
   data() {
@@ -42,10 +36,13 @@ export default {
       chart: null
     }
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+  watch: {
+    pieData: {
+      deep: true,
+      handler(val) {
+        this.initChart()
+      },
+    },
   },
   beforeDestroy() {
     if (!this.chart) {
