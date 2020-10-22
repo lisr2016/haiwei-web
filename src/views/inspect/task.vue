@@ -142,7 +142,46 @@
 
 
     <el-dialog title="考核项详情" :visible.sync="contentDetailVisible">
-      lxx
+      <div v-if="contentDetail && contentDetail.assesseeContent && contentDetail.assesseeContent.length" class="assessee">
+        <div class="cell">
+          <div class="label">考核单位：</div>
+          <div class="value">{{ contentDetail.assesseeOrgName }}</div>
+        </div>
+        <div v-for="(item, index) in contentDetail.assessorContent" :key="index">
+          <div class="cell">
+            <div class="label">考核项：</div>
+            <div class="value">{{ contentDetail.content[index] }}</div>
+          </div>
+          <div class="cell">
+            <div class="label">评语：</div>
+            <div class="value">{{ item.description }}</div>
+          </div>
+          <div class="cell">
+            <div class="label">图片：</div>
+            <img v-for="(i, k) in item.urls" :src="i" :key="k" alt="" class="image">
+          </div>
+        </div>
+      </div>
+      <div v-if="contentDetail && contentDetail.assessorContent && contentDetail.assessorContent.length" class="assessor">
+        <div class="cell">
+          <div class="label">考核单位：</div>
+          <div class="value">{{ contentDetail.assessorOrgName }}</div>
+        </div>
+        <div v-for="(item, index) in contentDetail.assessorContent" :key="index">
+          <div class="cell">
+            <div class="label">考核项：</div>
+            <div class="value">{{ contentDetail.content[index] }}</div>
+          </div>
+          <div class="cell">
+            <div class="label">评语：</div>
+            <div class="value">{{ item.description }}</div>
+          </div>
+          <div class="cell">
+            <div class="label">图片：</div>
+            <img v-for="(i, k) in item.urls" :src="i" :key="k" alt="" class="image">
+          </div>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -180,7 +219,7 @@ export default {
         time: ''
       },
       contentDetailVisible: false,
-      coontentDetail: null,
+      contentDetail: null,
       templateList: [],
     }
   },
@@ -246,7 +285,8 @@ export default {
       const { assesseeDone, assessorDone } = row
       if (assessorDone || assesseeDone) {
         this.contentDetailVisible = true
-        this.coontentDetail = row
+        this.contentDetail = row
+        console.log(this.contentDetail)
       } else {
         return false
       }
@@ -271,6 +311,26 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+  .cell {
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    min-height: 50px;
+    line-height: 50px;
+
+    .label {
+      color: #333333;
+      font-weight: 500;
+      min-width: 80px;
+      text-align: right;
+      margin-right: 10px;
+    }
+
+    .image {
+      width: 80px;
+      height: 80px;
+    }
+  }
   .active {
     color: #409EFF;
     cursor: pointer
