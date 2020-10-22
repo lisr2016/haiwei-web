@@ -28,12 +28,12 @@
       </el-table-column>
       <el-table-column label="开始时间" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ formatDate(scope.row.startTime) }}</span>
+          <span>{{ scope.row.startTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="结束时间" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ formatDate(scope.row.endTime) }}</span>
+          <span>{{ scope.row.endTime }}</span>
         </template>
       </el-table-column>
       <el-table-column label="考核目标" align="center" min-width="150px">
@@ -46,14 +46,14 @@
           <div v-for="(item, index) in scope.row.content" :key="index" @click="getDetail(scope.row, index)" :class="scope.row.assessorDone || scope.row.assesseeDone ? 'active' : ''">{{ item }}</div>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位" align="center" min-width="150px">
+      <el-table-column label="考核单位1" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.assessorOrgName }}({{ scope.row.assessorDone ? '已提交' : '未提交' }})</span>
+          <span>{{ scope.row.assessorOrgName }}{{ scope.row.assessorDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核对象" align="center" min-width="150px">
+      <el-table-column label="考核单位2" align="center" min-width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.assesseeOrgName }}({{ scope.row.assesseeDone ? '已提交' : '未提交' }})</span>
+          <span>{{ scope.row.assesseeOrgName }}{{ scope.row.type === '1'?'':scope.row.assesseeDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -209,9 +209,6 @@ export default {
   },
 
   methods: {
-      formatDate (time) {
-          return dayjs(new Date(time)).add(8,'hour').format('YYYY-MM-DD');
-      },
       deleteRow (id) {
           deleteTask({taskId: id}).then(() => {
               this.$message({message: '删除成功', type: 'success'})

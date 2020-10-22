@@ -58,11 +58,6 @@ export const constantRoutes = [
       name: 'Summary',
       component: () => import('@/views/summary/index'),
       meta: { title: '数据汇总', icon: 'dashboard' }
-    }, {
-      path: 'list',
-      name: 'List',
-      component: () => import('@/views/reportList/index'),
-      meta: { title: '报告详情', icon: 'el-icon-tickets' }
     }]
   },
   {
