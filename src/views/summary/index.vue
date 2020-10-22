@@ -15,6 +15,10 @@
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <el-date-picker v-else v-model="startTime" type="month" value-format="timestamp" :editable="false" placeholder="请选择查看月份" @change="getData" />
+        <div class="header-title" style="margin-left: 10px">级别</div>
+        <el-select style="width: 300px" v-model="level" placeholder="请选择" @change="getData">
+          <el-option v-for="(item, index) in levels" :key="index" :label="item" :value="!index ? 'all' : String(index + 1)" />
+        </el-select>
       </div>
       <el-button @click="download">下载</el-button>
     </div>
@@ -43,6 +47,8 @@ export default {
       active: '0',
       startTime: null,
       total: 0,
+      level: 'all',
+      levels: ['全部','三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站'],
       card: [
         { label: '生活垃圾日报', active: '0' },
         { label: '生活垃圾周报', active: '1' },
@@ -244,7 +250,7 @@ export default {
     },
     getData() {
       this.loading = true
-      const params = { startTime: this.startTime }
+      const params = { startTime: this.startTime, level: this.level }
       this.api(params).then(res => {
         this.cardData = res.data
         setTimeout(() => {
