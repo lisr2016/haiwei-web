@@ -81,9 +81,17 @@ export function cancelNotification(data) {
   })
 }
 
-export function updateUserInfo(data) {
+export function updateUserPassword(data) {
   return request({
-    url: '/cms/update/user/info',
+    url: '/cms/update/user/password',
+    method: 'post',
+    data
+  })
+}
+
+export function updateUserOrg(data) {
+  return request({
+    url: '/cms/update/user/org',
     method: 'post',
     data
   })
