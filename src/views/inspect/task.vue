@@ -158,7 +158,7 @@
           </div>
           <div class="cell">
             <div class="label">图片：</div>
-            <img v-for="(i, k) in item.urls" :src="i" :key="k" alt="" class="image">
+            <el-image v-for="(i, k) in item.urls" :src="i" :key="k" class="image" :preview-src-list="srcList" />
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@
           </div>
           <div class="cell">
             <div class="label">图片：</div>
-            <img v-for="(i, k) in item.urls" :src="i" :key="k" alt="" class="image">
+            <el-image v-for="(i, k) in item.urls" :src="i" :key="k" class="image" :preview-src-list="srcList" />
           </div>
         </div>
       </div>
@@ -187,8 +187,8 @@
 </template>
 
 <script>
-import { getTemplateList, getTaskList, getOrgList, addTask, deleteTask } from '@/api/table'
-import dayjs from 'dayjs'
+import { addTask, deleteTask, getOrgList, getTaskList, getTemplateList } from '@/api/table'
+
 export default {
   data() {
     return {
@@ -216,11 +216,12 @@ export default {
         target: '',
         assessorId: '',
         assesseeId: '',
-        time: ''
+        time: '',
       },
       contentDetailVisible: false,
       contentDetail: null,
       templateList: [],
+      srcList: [],
     }
   },
   created() {
@@ -243,32 +244,32 @@ export default {
           this.form.startTime = val[0]
           this.form.endTime = val[1]
         }
-      }
-    }
+      },
+    },
   },
 
   methods: {
-      deleteRow (id) {
-          deleteTask({taskId: id}).then(() => {
-              this.$message({message: '删除成功', type: 'success'})
-              this.fetchData()
-          })
-      },
+    deleteRow(id) {
+      deleteTask({ taskId: id }).then(() => {
+        this.$message({ message: '删除成功', type: 'success' })
+        this.fetchData()
+      })
+    },
     remoteMethod(query) {
       if (query !== '') {
-        this.loading = true;
+        this.loading = true
         getOrgList({ search: query }).then(res => {
           this.loading = false
           this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
         })
       } else {
-        this.selectList = [];
+        this.selectList = []
       }
     },
     submit() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
-          const params =  _.omit(this.form, this.form.type === '1' ? ['time', 'assesseeId'] : 'time')
+          const params = _.omit(this.form, this.form.type === '1' ? ['time', 'assesseeId'] : 'time')
           await addTask(params)
           this.$message({ message: '添加成功', type: 'success' })
           this.fetchData()
@@ -282,11 +283,29 @@ export default {
       })
     },
     getDetail(row, index) {
-      const { assesseeDone, assessorDone } = row
+      this.srcList = []
+      const { assesseeDone, assessorDone, assessorContent, assesseeContent } = row
       if (assessorDone || assesseeDone) {
         this.contentDetailVisible = true
         this.contentDetail = row
         console.log(this.contentDetail)
+        if (assessorContent) {
+          assessorContent.forEach(item => {
+            item.urls.forEach(i => {
+              this.srcList.push(i)
+            })
+
+          })
+        }
+        if (assesseeContent) {
+          assesseeContent.forEach(item => {
+            item.urls.forEach(i => {
+              this.srcList.push(i)
+            })
+
+          })
+        }
+
       } else {
         return false
       }
@@ -331,10 +350,12 @@ export default {
       height: 80px;
     }
   }
+
   .active {
     color: #409EFF;
     cursor: pointer
   }
+
   .search-box {
     width: 100%;
     display: flex;
