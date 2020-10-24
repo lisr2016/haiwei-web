@@ -67,7 +67,6 @@
             ref="upload"
             :data="uploadParams"
             action="https://chiateocean.com.cn/hdhq/cms/upload/file"
-            :file-list="form.url ? [{ url: form.url, name: form.filename }] : []"
             :headers="{ token }"
             :before-upload="beforeAvatarUpload"
             :before-remove="beforeRemove"
@@ -132,7 +131,9 @@ export default {
       this.uploadParams.filename = file.name
     },
     beforeRemove(file) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
+      return this.$confirm(`确定移除 ${ file.name }？`).then(() => {
+        this.form.filename = ''
+      });
     },
     add(type, row) {
       this.isEdit = type === '2'
@@ -145,6 +146,10 @@ export default {
 
     submit() {
       const api = this.isEdit ? updatePolicyList : addPolicyList
+      if (!this.form.filename) {
+        this.$message({ message: '请上传文件', type: 'error' })
+        return
+      }
       const params = this.isEdit ? Object.assign({}, this.form, { policyId: this.id }) : this.form;
       this.$refs.form.validate(async (valid) => {
         if (valid) {

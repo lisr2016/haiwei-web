@@ -82,7 +82,7 @@
       :total="total">
     </el-pagination>
 
-    <el-dialog title="新增机构" :visible.sync="dialogFormVisible">
+    <el-dialog :title="`${isEdit ? '编辑' : '新增'}机构`" :visible.sync="dialogFormVisible">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="机构名称" label-width="120px" prop="name">
           <el-input v-model="form.name" :disabled="isEdit" autocomplete="off" placeholder="请输入用户机构名称" />

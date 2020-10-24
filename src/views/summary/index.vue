@@ -4,7 +4,7 @@
       <el-tab-pane v-for="item in card" :label="item.label" :name="item.active" :key="item.active" />
     </el-tabs>
     <div class="progress-box">
-      <span class="text">填报进度：{{ cardData.reportCount }} / {{ total }}</span>
+      <span class="text">填报进度：{{ cardData.reportCount }} / {{ num }}</span>
       <el-progress :percentage="percentage" />
     </div>
     <div class="header">
@@ -141,6 +141,10 @@ export default {
         { title: '医疗垃圾月报', child: [{ label: '医疗垃圾月产量', id: 'totalWeight', unit: '千克' }], show: this.active === '3' },
       ].filter(item => item.show)
     },
+    num() {
+      if (!this.total) return 0
+      return this.total[this.level] ? this.total[this.level] : this.total.all
+    },
     options() {
       const arr = getWeeks()
       if (arr.length) {
@@ -149,8 +153,8 @@ export default {
       return []
     },
     percentage() {
-      if (this.cardData.reportCount && this.total) {
-        return Math.round(this.cardData.reportCount / this.total * 100)
+      if (this.cardData.reportCount && this.num) {
+        return Math.round(this.cardData.reportCount / this.num * 100)
       } else {
         return 0
       }
@@ -178,7 +182,7 @@ export default {
   },
   mounted() {
     getSummaryTotal().then(res => {
-      this.total = res.data.count
+      this.total = res.data
     })
   },
   watch: {
