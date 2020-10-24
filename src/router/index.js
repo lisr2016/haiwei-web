@@ -202,7 +202,7 @@ export const constantRoutes = [
 ]
 
 const createRouter = () => new Router({
-  mode: 'hash',
+  mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes,
   // mode: 'history'
