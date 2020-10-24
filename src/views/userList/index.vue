@@ -17,7 +17,7 @@
     >
       <el-table-column align="center" width="60px">
         <template slot-scope="scope">
-          {{ (params.offset - 1) * params.limit + scope.$index  + 1 }}
+          {{ (params.offset - 1) * params.limit + scope.$index + 1 }}
         </template>
       </el-table-column>
       <el-table-column label="手机号">
@@ -91,7 +91,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="更改密码" :visible.sync="dialogFormVisible">
+    <el-dialog title="更改密码" :visible.sync="dialogFormVisible1">
       <el-form :model="form" ref="form" :rules="editRules">
         <el-form-item label="用户密码" label-width="120px" prop="password">
           <el-input v-model="form.password" autocomplete="off" placeholder="请输入新密码" />
@@ -101,25 +101,35 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button @click="dialogFormVisible1 = false">取 消</el-button>
         <el-button type="primary" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="修改机构" :visible.sync="editVisible">
-      <el-form :model="form" ref="form" :rules="editRules">
-        <el-form-item label="用户密码" label-width="120px" prop="password">
-          <el-input v-model="form.password" autocomplete="off" placeholder="请输入新密码" />
+      <el-form :model="editForm" ref="editForm" :rules="editRules">
+        <el-form-item label="所属机构名称" label-width="120px" prop="organizationId">
+          <el-select v-model="editForm.organizationId" filterable remote reserve-keyword placeholder="请输入关键词搜索机构" :loading="loading" :remote-method="remoteMethod">
+            <el-option
+              v-for="item in selectList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
-
       </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editVisible = false">取 消</el-button>
+        <el-button type="primary" @click="upload">确 定</el-button>
+      </div>
     </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { addUser, getUserList, updateUserPassword, updateUserOrg, getOrgList, deleteUser } from '@/api/table'
+import { addUser, deleteUser, getOrgList, getUserList, updateUserOrg, updateUserPassword } from '@/api/table'
 
 const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
@@ -136,7 +146,7 @@ export default {
           return callback(new Error('请输入正确的手机号'))
         }
       }
-    };
+    }
     return {
       rules: {
         phone: [{ required: true, trigger: 'blur', validator: checkPhone }],
@@ -146,6 +156,7 @@ export default {
       editRules: {
         password: [{ required: true, message: '密码不能为空' }],
         psw: [{ required: true, message: '密码不能为空' }],
+        organizationId: [{ required: true, message: '机构名称不能为空' }],
       },
       selectList: [],
       total: 0,
@@ -160,6 +171,7 @@ export default {
       list: [],
       listLoading: true,
       dialogFormVisible: false,
+      dialogFormVisible1: false,
       editVisible: false,
       loading: false,
       userId: '',
@@ -171,6 +183,8 @@ export default {
         password: '',
       },
       form: { password: '', psw: '' },
+      editForm: { userId: '', organizationId: '' },
+      organizationName: '',
     }
   },
   created() {
@@ -184,36 +198,39 @@ export default {
         }
       },
     },
-    editVisible: {
-      handler(val) {
-        if (!val) {
-          this.$refs.form.resetFields()
-        }
-      },
-    },
   },
 
   methods: {
     remoteMethod(query) {
       if (query !== '') {
-        this.loading = true;
+        this.loading = true
         getOrgList({ search: query }).then(res => {
           this.loading = false
           this.selectList = res.data.list.map(item => ({ value: item.organizationId, label: item.name }))
         })
       } else {
-        this.selectList = [];
+        this.selectList = []
       }
     },
-    changePassword(e){
-      this.editVisible = true
+    changePassword(e) {
+      this.dialogFormVisible1 = true
       this.userId = e.id
     },
-    editOrg (userId, organizationId) {
-        updateUserOrg({userId, organizationId}).then(() => {
-            this.$message({ message: '修成功', type: 'success' })
-            this.fetchData()
+    editOrg(row) {
+      const { orgInfo, id } = row
+      this.editVisible = true
+      this.editForm.userId = id
+      this.organizationName = orgInfo.name
+      this.editForm.organizationId = orgInfo.name
+    },
+    upload() {
+      if (this.organizationName !== this.editForm.organizationId) {
+        updateUserOrg(this.editForm).then(() => {
+          this.$message({ message: '修改机构成功', type: 'success' })
+          this.fetchData()
         })
+      }
+      this.editVisible = false
     },
     deleteRow(userId, isDelete) {
       deleteUser({ userId, isDelete }).then(() => {
@@ -259,7 +276,7 @@ export default {
     },
     fetchData() {
       this.listLoading = false
-        getUserList(this.params).then(response => {
+      getUserList(this.params).then(response => {
         this.list = response.data.list
         this.total = response.data.count
         this.listLoading = false
