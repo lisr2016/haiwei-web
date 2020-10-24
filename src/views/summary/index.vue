@@ -17,7 +17,7 @@
         <el-date-picker v-else v-model="startTime" type="month" value-format="timestamp" :editable="false" placeholder="请选择查看月份" @change="getData" />
         <div class="header-title" style="margin-left: 10px">级别</div>
         <el-select style="width: 300px" v-model="level" placeholder="请选择" @change="getData">
-          <el-option v-for="(item, index) in levels" :key="index" :label="item" :value="!index ? 'all' : String(index + 1)" />
+          <el-option v-for="(item, index) in levels" :key="index" :label="item" :value="!index ? 'all' : String(index)" />
         </el-select>
       </div>
       <el-button @click="download">下载</el-button>
@@ -142,7 +142,7 @@ export default {
       ].filter(item => item.show)
     },
     num() {
-      if (!this.total) return 0
+      if (!this.total) return 0;
       return this.total[this.level] ? this.total[this.level] : 0
     },
     options() {
