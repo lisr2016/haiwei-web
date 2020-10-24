@@ -143,7 +143,7 @@ export default {
     },
     num() {
       if (!this.total) return 0
-      return this.total[this.level] ? this.total[this.level] : this.total.all
+      return this.total[this.level] ? this.total[this.level] : 0
     },
     options() {
       const arr = getWeeks()
