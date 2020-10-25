@@ -72,7 +72,7 @@ export default {
             roseType: 'radius',
             radius: [15, 95],
             center: ['50%', '38%'],
-            data: this.value,
+            data: this.pieData,
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }
