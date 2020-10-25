@@ -137,7 +137,6 @@ export default {
   },
   mounted() {
     this.fetchData()
-    console.log(this.form.levels)
   },
   watch: {
     dialogFormVisible: {
@@ -155,10 +154,7 @@ export default {
       this.isIndeterminate = false;
     },
     handleCheckedCitiesChange(value) {
-      console.log(value)
       let checkedCount = value.length;
-      console.log(checkedCount)
-      console.log(this.form.levels.length)
       this.checkAll = checkedCount === levels.length;
       this.isIndeterminate = checkedCount > 0 && checkedCount < levels.length;
     },
@@ -185,7 +181,6 @@ export default {
         this.$message({ message: '请上传文件', type: 'error' })
         return
       }
-      console.log(this.form)
       const params = this.isEdit ? Object.assign({}, this.form, { policyId: this.id }) : this.form;
       this.$refs.form.validate(async (valid) => {
         if (valid) {
