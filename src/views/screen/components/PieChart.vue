@@ -62,7 +62,6 @@ export default {
         },
         legend: {
           left: 'center',
-          bottom: '10',
           data: this.legend
         },
         series: [
@@ -71,7 +70,7 @@ export default {
             type: 'pie',
             roseType: 'radius',
             radius: [15, 95],
-            center: ['50%', '38%'],
+            center: ['50%', '60%'],
             data: this.pieData,
             animationEasing: 'cubicInOut',
             animationDuration: 2600

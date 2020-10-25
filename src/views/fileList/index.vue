@@ -26,6 +26,17 @@
           {{ scope.row.content }}
         </template>
       </el-table-column>
+      <el-table-column label="级别" align="center" width="300px">
+        <template slot-scope="scope">
+          <template v-if="scope.row.levels.length" >
+            <span v-if="scope.row.levels.length === levels.length">所有机构</span>
+            <template v-else>
+              <span v-for="(item,index) in scope.row.levels" :key="item">{{ levels[Number(item)] }}{{ index === scope.row.levels.length - 1 ? '' : ',' }}</span>
+            </template>
+          </template>
+          <span v-else>所有机构</span>
+        </template>
+      </el-table-column>
       <el-table-column label="发布时间" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>
@@ -61,6 +72,12 @@
         <el-form-item label="政策内容:" label-width="120px" prop="content">
           <el-input v-model="form.content" type="textarea" autocomplete="off" placeholder="请输入政策内容" />
         </el-form-item>
+        <el-form-item label="级别:" label-width="120px">
+          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全部</el-checkbox>
+          <el-checkbox-group v-model="form.levels" @change="handleCheckedCitiesChange">
+            <el-checkbox v-for="(item, index) in levels" :label="String(index)" :key="index">{{ item }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
         <el-form-item label="上传文件:" label-width="120px" prop="url">
           <el-upload
             class="upload-demo"
@@ -87,15 +104,19 @@
 <script>
 import { addPolicyList, updatePolicyList, getPolicyList } from '@/api/table'
 import { getToken } from '@/utils/auth'
+const levels = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
 
 export default {
   data() {
     return {
+      levels,
+      checkAll: true,
       rules: {
         title: [{ required: true, message: '标题不能为空' }],
         content: [{ required: true, message: '政策内容不能为空' }],
         url: [{ required: true, message: '请上传政策文件' }],
       },
+      isIndeterminate: true,
       total: 0,
       params: { offset: 1, limit: 10, },
       list: [],
@@ -109,12 +130,14 @@ export default {
         title: '',
         content: '',
         filename: '',
+        levels: levels.map((item, index) => String(index)),
       },
       uploadParams: { filename: '' }
     }
   },
-  created() {
+  mounted() {
     this.fetchData()
+    console.log(this.form.levels)
   },
   watch: {
     dialogFormVisible: {
@@ -127,6 +150,18 @@ export default {
   },
 
   methods: {
+    handleCheckAllChange(val) {
+      this.form.levels = val ? levels.map((item, index) => String(index)) : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedCitiesChange(value) {
+      console.log(value)
+      let checkedCount = value.length;
+      console.log(checkedCount)
+      console.log(this.form.levels.length)
+      this.checkAll = checkedCount === levels.length;
+      this.isIndeterminate = checkedCount > 0 && checkedCount < levels.length;
+    },
     beforeAvatarUpload(file) {
       this.uploadParams.filename = file.name
     },
@@ -150,6 +185,7 @@ export default {
         this.$message({ message: '请上传文件', type: 'error' })
         return
       }
+      console.log(this.form)
       const params = this.isEdit ? Object.assign({}, this.form, { policyId: this.id }) : this.form;
       this.$refs.form.validate(async (valid) => {
         if (valid) {
