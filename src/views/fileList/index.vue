@@ -26,10 +26,10 @@
           {{ scope.row.content }}
         </template>
       </el-table-column>
-      <el-table-column label="级别" align="center" width="300px">
+      <el-table-column label="可浏览机构级别" align="center" width="300px">
         <template slot-scope="scope">
-          <template v-if="scope.row.levels.length" >
-            <span v-if="scope.row.levels.length === levels.length">所有机构</span>
+          <template v-if="scope.row.levels && scope.row.levels.length" >
+            <span v-if="scope.row.levels && scope.row.levels.length === levels.length">所有机构</span>
             <template v-else>
               <span v-for="(item,index) in scope.row.levels" :key="item">{{ levels[Number(item)] }}{{ index === scope.row.levels.length - 1 ? '' : ',' }}</span>
             </template>
@@ -72,7 +72,7 @@
         <el-form-item label="政策内容:" label-width="120px" prop="content">
           <el-input v-model="form.content" type="textarea" autocomplete="off" placeholder="请输入政策内容" />
         </el-form-item>
-        <el-form-item label="级别:" label-width="120px">
+        <el-form-item label="可浏览机构级别:" label-width="120px">
           <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全部</el-checkbox>
           <el-checkbox-group v-model="form.levels" @change="handleCheckedCitiesChange">
             <el-checkbox v-for="(item, index) in levels" :label="String(index)" :key="index">{{ item }}</el-checkbox>
