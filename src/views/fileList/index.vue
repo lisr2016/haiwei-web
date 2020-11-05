@@ -48,7 +48,7 @@
       >
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="add('2', scope.row)">编辑</el-button>
-<!--          <el-button type="text" size="small" @click="handleDeleteOrg(scope.row)">{{ scope.row.isDeleted?`恢复`:`注销`}}</el-button>-->
+          <el-button type="text" size="small" @click="download(scope.row)">下载</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -149,6 +149,13 @@ export default {
   },
 
   methods: {
+    download(row) {
+      let link = document.createElement("a");
+      link.style.display = "none";
+      link.href = row.url;
+      link.setAttribute("download", row.filename)
+      link.click();
+    },
     handleCheckAllChange(val) {
       this.form.levels = val ? levels.map((item, index) => String(index)) : [];
       this.isIndeterminate = false;
@@ -170,7 +177,13 @@ export default {
       this.isEdit = type === '2'
       this.id = type === '2' ? row.id : ''
       if (type === '2') {
-        Object.keys(this.form).forEach(key => this.form[key] = row[key])
+        Object.keys(this.form).forEach(key => {
+          if (key === 'levels') {
+            this.form.levels = row.levels ? row.levels : this.levels.map((item, index) => String(index))
+          } else {
+            this.form[key] = row[key]
+          }
+        })
       }
       this.dialogFormVisible = true
     },

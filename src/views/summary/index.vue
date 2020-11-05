@@ -4,7 +4,7 @@
       <el-tab-pane v-for="item in card" :label="item.label" :name="item.active" :key="item.active" />
     </el-tabs>
     <div class="progress-box">
-      <span class="text">填报进度：{{ cardData.reportCount }} / {{ num }}</span>
+      <span class="text">填报进度：{{ cardData.reportCount }} / {{ num || 0 }}</span>
       <el-progress :percentage="percentage" />
     </div>
     <div class="header">
