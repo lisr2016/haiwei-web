@@ -147,7 +147,7 @@
           <div class="label">考核单位：</div>
           <div class="value">{{ contentDetail.assesseeOrgName }}</div>
         </div>
-        <div v-for="(item, index) in contentDetail.assessorContent" :key="index">
+        <div v-for="(item, index) in contentDetail.assesseeContent" :key="index">
           <div class="cell">
             <div class="label">考核项：</div>
             <div class="value">{{ contentDetail.content[index] }}</div>
