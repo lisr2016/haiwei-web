@@ -39,6 +39,7 @@ import { getDomesticDaily, getDomesticMonthly, getDomesticWeekly, getMedicMonthl
 import { getWeeks } from '@/utils'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
+import dayjs from 'dayjs'
 
 export default {
   name: 'Dashboard',
@@ -190,7 +191,7 @@ export default {
       handler(val) {
         switch (val) {
           case '0':
-            this.startTime = new Date().getTime()
+            this.startTime = dayjs().startOf('day').toDate().getTime()
             this.api = getDomesticDaily
             break
           case '1':

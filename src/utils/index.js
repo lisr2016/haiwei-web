@@ -157,15 +157,15 @@ export function debounce(func, wait, immediate) {
 
 export function getWeeks(){
   let result = [];
-  let FridayStart = dayjs('2020-09-04');
-  while(dayjs().isAfter(FridayStart)){
-    let end = dayjs(FridayStart).add(6, 'day');
+  let startTime = dayjs('2020-10-05');
+  while(dayjs().isAfter(startTime)){
+    let end = dayjs(startTime).add(6, 'day');
     result.push({
-      timestamp: dayjs(FridayStart).valueOf(),
-      start:`${dayjs(FridayStart).year()}年${dayjs(FridayStart).month() + 1}月${dayjs(FridayStart).date()}日`,
+      timestamp: dayjs(startTime).valueOf(),
+      start:`${dayjs(startTime).year()}年${dayjs(startTime).month() + 1}月${dayjs(startTime).date()}日`,
       end:`${dayjs(end).year()}年${dayjs(end).month() + 1}月${dayjs(end).date()}日`
     });
-    FridayStart = dayjs(FridayStart).add(7, 'day');
+    startTime = dayjs(startTime).add(7, 'day');
 
   }
   return result;
