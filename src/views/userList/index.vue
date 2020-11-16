@@ -35,11 +35,6 @@
           {{ scope.row.orgInfo.initialized?`已完成`:`未完成` }}
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.isDeleted ? '注销' : '正常' }}</span>
-        </template>
-      </el-table-column>
       <el-table-column
         fixed="right"
         label="操作"
@@ -47,8 +42,8 @@
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="changePassword(scope.row)">修改密码</el-button>
           <el-button type="text" size="small" @click="editOrg(scope.row)">修改机构</el-button>
-          <el-button v-if="!scope.row.isDeleted" type="text" size="small" @click="deleteRow(scope.row.id, true)">注销</el-button>
-          <el-button v-else type="text" size="small" @click="deleteRow(scope.row.id, false)">恢复</el-button>
+<!--          <el-button v-if="!scope.row.isDeleted" type="text" size="small" @click="deleteRow(scope.row.id, true)">注销</el-button>-->
+<!--          <el-button v-else type="text" size="small" @click="deleteRow(scope.row.id, false)">恢复</el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -131,7 +126,7 @@
 <script>
 import { addUser, deleteUser, getOrgList, getUserList, updateUserOrg, updateUserPassword } from '@/api/table'
 
-const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
+const levelValues = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心（区属）',  '社区卫生服务中心（非区属）','社区卫生服务站']
 const street = ['万寿路街道', '永定路街道', '羊坊店街道', '甘家口街道', '八里庄街道', '紫竹院街道', '北下关街道', '北太平庄街道', '学院路街道', '中关村街道', '海淀街道', '青龙桥街道', '清华园街道', '燕园街道', '香山街道', '清河街道', '花园路街道', '西三旗街道', '马连洼街道', '田村路街道', '上地街道', '万柳地区', '东升地区', '曙光街道', '温泉地区', '四季青地区', '西北旺地区', '苏家坨地区', '上庄地区']
 export default {
   data() {

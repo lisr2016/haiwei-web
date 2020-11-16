@@ -104,7 +104,7 @@
 <script>
 import { addPolicyList, updatePolicyList, getPolicyList } from '@/api/table'
 import { getToken } from '@/utils/auth'
-const levels = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心', '社区卫生服务站']
+const levels = ['三级医院', '二级医院', '一级医院', '门诊部', '诊所', '未定级', '医务室', '卫生室', '社区卫生服务中心（区属）',  '社区卫生服务中心（非区属）','社区卫生服务站']
 
 export default {
   data() {
