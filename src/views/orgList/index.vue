@@ -183,7 +183,7 @@ export default {
       this.isEdit = type === '2'
       this.organizationId = type === '2' ? row.organizationId : ''
       if (type === '2') {
-        Object.keys(this.form).forEach(key => this.form[key] = row[key])
+        Object.keys(this.form).forEach(key => {if(row[key])this.form[key] = row[key]})
       }
       this.dialogFormVisible = true
     },
@@ -202,6 +202,8 @@ export default {
       const api = this.isEdit ? updateOrg : addOrg
       const params = this.isEdit ? Object.assign({}, this.form, { organizationId: this.organizationId }) : this.form;
       // delete params.name;
+      if(this.isEdit) delete params.name
+
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           await api(params);
