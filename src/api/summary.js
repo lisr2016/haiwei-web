@@ -30,6 +30,31 @@ export function getMedicMonthly(data) {
     data
   })
 }
+
+export function getBarrelMonthly(data) {
+  return request({
+    url: '/cms/summary/barrel/monthly',
+    method: 'post',
+    data
+  })
+}
+
+export function getReportSubmitted(data) {
+  return request({
+    url: '/cms/report/submitted',
+    method: 'post',
+    data
+  })
+}
+
+export function getReportDetail(data) {
+  return request({
+    url: '/cms/report/detail',
+    method: 'post',
+    data
+  })
+}
+
 export function getSummaryTotal(params) {
   return request({
     url: '/cms/summary/total',

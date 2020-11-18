@@ -23,6 +23,7 @@
       <el-button @click="download">下载</el-button>
     </div>
     <div style="margin-bottom: 20px">当前汇总情况</div>
+    <el-button type="text" size="small" @click="getSubmittedOrg()">已提交机构列表</el-button>
     <div class="table" v-loading="loading">
       <el-card v-for="(item, index) in list" :key="index" class="box-card">
         <div slot="header" class="clearfix">{{ item.title }}</div>
@@ -35,7 +36,7 @@
 </template>
 
 <script>
-import { getDomesticDaily, getDomesticMonthly, getDomesticWeekly, getMedicMonthly, getSummaryTotal } from '@/api/summary'
+import { getDomesticDaily, getDomesticMonthly, getDomesticWeekly, getMedicMonthly, getSummaryTotal, getBarrelMonthly, getReportSubmitted, getReportDetail } from '@/api/summary'
 import { getWeeks } from '@/utils'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
@@ -141,6 +142,7 @@ export default {
           show: this.active === '2',
         },
         { title: '医疗垃圾月报', child: [{ label: '医疗垃圾月产量', id: 'totalWeight', unit: '千克' }], show: this.active === '3' },
+        { title: '桶前值守月报', child: [{ label: '桶前值守人数', id: 'personCountOnDuty', unit: '人' }], show: this.active === '4' },
       ].filter(item => item.show)
     },
     num() {
@@ -190,25 +192,34 @@ export default {
   watch: {
     active: {
       handler(val) {
+        const date = new Date()
         switch (val) {
           case '0':
             this.startTime = dayjs().startOf('day').toDate().getTime()
             this.api = getDomesticDaily
+            this.type = '1'
             break
           case '1':
             this.startTime = this.options[this.options.length - 1].value
             this.api = getDomesticWeekly
+              this.type = '2'
             break
           case '2':
-            const date = new Date()
             date.setDate(1)
             date.setHours(0, 0, 0, 0)
             this.startTime = date.getTime()
             this.api = getDomesticMonthly
+              this.type = '3'
             break
           case '3':
             this.startTime = new Date().getTime()
             this.api = getMedicMonthly
+              this.type = '4'
+            break
+          case '4':
+            this.startTime = new Date().getTime()
+            this.api = getBarrelMonthly
+              this.type = '5'
             break
         }
         this.getData()
@@ -223,6 +234,12 @@ export default {
         s += arr[i].num;
       }
       return s;
+    },
+    getSubmittedOrg() {
+        const params = {type:"1"};
+        getReportSubmitted(params).then(() => {
+
+        })
     },
     async download() {
       // demo 数据格式

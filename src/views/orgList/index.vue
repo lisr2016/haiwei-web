@@ -101,7 +101,7 @@
         </el-form-item>
         <el-form-item label="级别:" label-width="120px" prop="level">
           <el-select v-model="form.level" placeholder="请选择用户级别">
-            <el-option v-for="(item, index) in levelValues" :label="item" :value="String(index)" :key="index" />
+            <el-option v-for="(item, index) in levelValues" :label="item" :value="String(index + 1)" :key="index" />
           </el-select>
         </el-form-item>
         <el-form-item label="街道:" label-width="120px" prop="street">
@@ -129,12 +129,12 @@ export default {
       if (!value) {
         return callback(new Error('联系方式不能为空'))
       } else {
-        const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
-        if (reg.test(value)) {
+        // const reg = /^1[3|4|5|7|8|9|6][0-9]\d{8}$/
+        // if (reg.test(value)) {
           callback()
-        } else {
-          return callback(new Error('请输入正确的联系方式'))
-        }
+        // } else {
+        //   return callback(new Error('请输入正确的联系方式'))
+        // }
       }
     };
     return {
