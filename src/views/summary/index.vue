@@ -236,7 +236,8 @@ export default {
       return s;
     },
     getSubmittedOrg() {
-        const params = {type:"1"};
+        const params = {type:this.type,time:this.startTime};
+        if(this.level) params.level = this.level
         getReportSubmitted(params).then(() => {
 
         })
