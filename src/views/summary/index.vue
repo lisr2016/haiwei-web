@@ -64,7 +64,128 @@
       </el-pagination>
     </el-dialog>
     <el-dialog title="机构详情" :visible.sync="visible_two">
-      机构详情展示{{orgDetail}}
+      报告详情：
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        宣传方式:{{orgDetail.advertise_content}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        宣传次数:{{orgDetail.advertise_times}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        政府检查次数:{{orgDetail.gov_inspection_content}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        是否改正到位:{{orgDetail.gov_inspection_corrected?'是':'否'}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        主要涉及问题:{{orgDetail.gov_inspection_problems}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        存在问题数目:{{orgDetail.gov_inspection_times}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        会议具体事项:{{orgDetail.meeting_content}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        管理工作会议主持人:{{orgDetail.meeting_host}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        管理工作会议次数:{{orgDetail.meeting_times}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        主要涉及问题:{{orgDetail.self_inspection_content}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        是否改正到位:{{orgDetail.self_inspection_corrected?'是':'否'}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        存在问题数目:{{orgDetail.self_inspection_problems}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        自测、巡查次数:{{orgDetail.self_inspection_times}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        培训人数:{{orgDetail.trainees}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        培训内容:{{orgDetail.traning_content}}
+      </el-table-column>
+      <el-table-column v-if="type === '1'" align="center" width="300px">
+        培训次数:{{orgDetail.traning_times}}
+      </el-table-column>
+
+
+
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        收运人员:{{orgDetail.consignee}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        看守引导人员:{{orgDetail.guide}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        监督检查人员:{{orgDetail.inspector}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        厨余垃圾投放收集容器(个):{{orgDetail.kitchen_waste_collectors}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        厨余垃圾单位暂时存放点(处):{{orgDetail.kitchen_waste_positons}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        可回收物投放收集容器(个):{{orgDetail.recyclable_waste_collectors}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        可回收物单位暂时存放点(处):{{orgDetail.recyclable_waste_positons}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        有害垃圾投放收集容器(个):{{orgDetail.harmful_waste_collectors}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        有害垃圾单位暂时存放点(处):{{orgDetail.harmful_waste_positons}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        其他垃圾投放收集容器(个):{{orgDetail.other_waste_collectors}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        其他垃圾单位暂时存放点(处):{{orgDetail.other_waste_positons}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        医疗垃圾投放收集容器(个):{{orgDetail.medic_waste_collectors}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        医疗垃圾单位暂时存放点(处):{{orgDetail.medic_waste_positons}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        大件垃圾单位暂时存放点(处):{{orgDetail.bulky_waste_positons}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        厨余垃圾(公斤):{{orgDetail.kitchen_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        可回收垃圾(公斤):{{orgDetail.recyclable_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        有害垃圾(公斤):{{orgDetail.harmful_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        其他垃圾(公斤):{{orgDetail.other_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '2'" align="center" width="300px">
+        医疗废物(公斤):{{orgDetail.medic_waste}}
+      </el-table-column>
+
+
+
+
+
+
+
+      <el-table-column align="center" width="300px">
+        报告提交人手机号:{{orgDetail.phone}}
+      </el-table-column>
+      <el-table-column align="center" width="300px">
+        报告提交时间:{{orgDetail.submitTime}}
+      </el-table-column>
     </el-dialog>
   </div>
 </template>
@@ -277,6 +398,7 @@ export default {
         this.visible_two = true
         getReportDetail({ reportId: row.reportId, type: this.type }).then(res => {
           this.orgDetail = res.data
+            this.orgDetail.submitTime = dayjs(res.data.createdAt).format('YYYY-MM-DD HH:mm:ss')
         })
       }
     },
