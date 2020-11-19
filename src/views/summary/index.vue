@@ -23,7 +23,8 @@
       <el-button @click="download">下载</el-button>
     </div>
     <div style="margin-bottom: 20px">当前汇总情况</div>
-    <el-button type="text" size="small" @click="getSubmittedOrg()">已提交机构列表</el-button>
+    <el-button type="text" size="small" @click="getSubmittedOrg('1')">已提交机构列表</el-button>
+    <el-button v-if="level !== 'all'" type="text" size="small" @click="getSubmittedOrg('2')">未提交机构列表</el-button>
     <div class="table" v-loading="loading">
       <el-card v-for="(item, index) in list" :key="index" class="box-card">
         <div slot="header" class="clearfix">{{ item.title }}</div>
@@ -32,6 +33,39 @@
         </div>
       </el-card>
     </div>
+
+    <el-dialog :title="title" :visible.sync="visible_one">
+      <el-table
+        v-loading="tableLoading"
+        :data="tableData"
+        element-loading-text="Loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="序号" align="center" width="70">
+          <template slot-scope="scope">
+            {{ (offset - 1) * 10 + scope.$index  + 1  }}
+          </template>
+        </el-table-column>
+        <el-table-column label="机构名称" align="center">
+          <template slot-scope="scope">
+            <span :style="{ color: otherType === '1' ? '#409EFF' : '' }" @click="visibleChange(scope.row)">{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        style="margin-top: 20px;padding-left: 0"
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-size="10"
+        layout="total, prev, pager, next, jumper"
+        :total="allData.length">
+      </el-pagination>
+    </el-dialog>
+    <el-dialog title="机构详情" :visible.sync="visible_two">
+      机构详情展示{{orgDetail}}
+    </el-dialog>
   </div>
 </template>
 
@@ -61,7 +95,17 @@ export default {
       cardData: {},
       loading: true,
       api: getDomesticDaily,
-      Excel: null
+      Excel: null,
+      tableLoading: true,
+      visible_one: false,
+      visible_two: false,
+      tableData: [],
+      allData: [],
+      title: '',
+      otherType: '',
+      type: '',
+      orgDetail: '',
+      offset: 1
     }
   },
   computed: {
@@ -228,6 +272,14 @@ export default {
     },
   },
   methods: {
+    visibleChange(row) {
+      if (this.otherType === '1') {
+        this.visible_two = true
+        getReportDetail({ reportId: row.reportId, type: this.type }).then(res => {
+          this.orgDetail = res.data
+        })
+      }
+    },
     add(arr) {
       let s = 0;
       for (let i = arr.length - 1; i >= 0; i--) {
@@ -235,11 +287,21 @@ export default {
       }
       return s;
     },
-    getSubmittedOrg() {
+    handleCurrentChange(val) {
+      this.offset = val
+      this.tableData = this.allData.slice((val - 1) * 10, (val - 1) * 10 + 10)
+    },
+    getSubmittedOrg(type) {
+        this.title = type === '1' ? '已提交机构' : '未提交机构'
+        this.otherType = type
         const params = {type:this.type,time:this.startTime};
         if(this.level) params.level = this.level
-        getReportSubmitted(params).then(() => {
-
+        this.tableLoading = true
+        this.visible_one = true
+        getReportSubmitted(params).then(res => {
+          this.allData = type === '1' ? res.data.submittedOrg : res.data.unSubmittedOrg
+          this.tableData = this.allData.slice(0, 10)
+          this.tableLoading = false
         })
     },
     async download() {
