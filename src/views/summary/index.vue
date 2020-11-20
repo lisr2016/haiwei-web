@@ -63,7 +63,7 @@
         :total="allData.length">
       </el-pagination>
     </el-dialog>
-    <el-dialog title="机构详情" :visible.sync="visible_two">
+    <el-dialog title="报告详情" :visible.sync="visible_two">
       报告详情：
       <el-table-column v-if="type === '1'" align="center" width="300px">
         宣传方式:{{orgDetail.advertise_content}}
@@ -384,7 +384,9 @@ export default {
               this.type = '4'
             break
           case '4':
-            this.startTime = new Date().getTime()
+            date.setDate(1)
+            date.setHours(0, 0, 0, 0)
+            this.startTime = date.getTime()
             this.api = getBarrelMonthly
               this.type = '5'
             break
