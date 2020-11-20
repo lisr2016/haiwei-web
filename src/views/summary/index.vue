@@ -377,7 +377,9 @@ export default {
               this.type = '3'
             break
           case '3':
-            this.startTime = new Date().getTime()
+            date.setDate(1)
+            date.setHours(0, 0, 0, 0)
+            this.startTime = date.getTime()
             this.api = getMedicMonthly
               this.type = '4'
             break
