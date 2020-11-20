@@ -114,8 +114,6 @@
         培训次数:{{orgDetail.traning_times}}
       </el-table-column>
 
-
-
       <el-table-column v-if="type === '2'" align="center" width="300px">
         收运人员:{{orgDetail.consignee}}
       </el-table-column>
@@ -174,11 +172,29 @@
         医疗废物(公斤):{{orgDetail.medic_waste}}
       </el-table-column>
 
+      <el-table-column v-if="type === '3'" align="center" width="300px">
+        厨余垃圾(公斤):{{orgDetail.kitchen_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '3'" align="center" width="300px">
+        可回收垃圾(公斤):{{orgDetail.recyclable_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '3'" align="center" width="300px">
+        有害垃圾(公斤):{{orgDetail.harmful_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '3'" align="center" width="300px">
+        大件垃圾(公斤):{{orgDetail.bulky_waste}}
+      </el-table-column>
+      <el-table-column v-if="type === '3'" align="center" width="300px">
+        其他垃圾(公斤):{{orgDetail.other_waste}}
+      </el-table-column>
 
+      <el-table-column v-if="type === '4'" align="center" width="300px">
+        月医疗垃圾(公斤):{{orgDetail.total_weight}}
+      </el-table-column>
 
-
-
-
+      <el-table-column v-if="type === '5'" align="center" width="300px">
+        值守人数:{{orgDetail.person_count_on_duty}}
+      </el-table-column>
 
       <el-table-column align="center" width="300px">
         报告提交人手机号:{{orgDetail.phone}}
