@@ -103,16 +103,16 @@
         <el-form-item label="考核目标" label-width="120px" prop="target">
           <el-input v-model="form.target" autocomplete="off" placeholder="请填写考核目标" />
         </el-form-item>
-        <el-form-item label="考核模版" label-width="120px" prop="templateId">
-          <el-select v-model="form.templateId" style="width: 100%;" placeholder="请选择">
-            <el-option
-              v-for="item in templateList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="考核模版" label-width="120px" prop="templateId">-->
+<!--          <el-select v-model="form.templateId" style="width: 100%;" placeholder="请选择">-->
+<!--            <el-option-->
+<!--              v-for="item in templateList"-->
+<!--              :key="item.value"-->
+<!--              :label="item.label"-->
+<!--              :value="item.value">-->
+<!--            </el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
         <el-form-item label="考核单位" label-width="120px" prop="assessorId">
           <el-select v-model="form.assessorId" style="width: 100%;" filterable remote reserve-keyword placeholder="请输入关键词搜索机构" :loading="loading" :remote-method="remoteMethod">
             <el-option
@@ -197,7 +197,6 @@ export default {
         name: [{ required: true, message: '考核名称不能为空' }],
         assessorId: [{ required: true, message: '考核单位不能为空' }],
         assesseeId: [{ required: true, message: '考核对象不能为空' }],
-        templateId: [{ required: true, message: '考核模版不能为空' }],
         time: [{ required: true, message: '请选择考核开始/结束日期', trigger: 'change' }],
       },
       selectList: [],
@@ -220,15 +219,11 @@ export default {
       },
       contentDetailVisible: false,
       contentDetail: null,
-      templateList: [],
       srcList: [],
     }
   },
   created() {
     this.fetchData()
-    getTemplateList(this.params).then(response => {
-      this.templateList = response.data.list.map(item => ({ label: item.name, value: item.id }))
-    })
   },
   watch: {
     dialogFormVisible: {

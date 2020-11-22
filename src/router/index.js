@@ -68,12 +68,6 @@ export const constantRoutes = [
     meta: {  title: '巡检考核', icon: 'el-icon-message-solid' },
     children: [
       {
-        path: 'template',
-        name: 'template',
-        component: () => import('@/views/inspect/template'),
-        meta: { title: '考核模板', icon: 'el-icon-tickets' }
-      },
-      {
         path: 'task',
         name: 'task',
         component: () => import('@/views/inspect/task'),
