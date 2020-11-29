@@ -111,7 +111,7 @@ export default {
 [
 {
 name: '医疗废物',
-itemStyle: { normal: { color: '#FF005A', lineStyle: { color: '#FF005A', width: 2 } } },
+itemStyle: { normal: { color: '#FEF336', lineStyle: { color: '#FEF336', width: 2 } } },
 smooth: true,
 type: 'line',
 data: expectedData,
@@ -124,9 +124,9 @@ smooth: true,
 type: 'line',
 itemStyle: {
 normal: {
-color: '#3888FA',
+color: '#37913D',
 lineStyle: {
-color: '#3888FA',
+color: '#37913D',
 width: 2,
 },
 areaStyle: {
@@ -144,9 +144,9 @@ smooth: true,
 type: 'line',
 itemStyle: {
 normal: {
-color: '#2EC7C9',
+color: '#5AB1EF',
 lineStyle: {
-color: '#2EC7C9',
+color: '#5AB1EF',
 width: 2,
 },
 areaStyle: {
@@ -164,9 +164,9 @@ smooth: true,
 type: 'line',
 itemStyle: {
 normal: {
-color: '#FEB980',
+color: '#F65A4C',
 lineStyle: {
-color: '#FEB980',
+color: '#F65A4C',
 width: 2,
 },
 areaStyle: {
@@ -184,9 +184,9 @@ smooth: true,
 type: 'line',
 itemStyle: {
 normal: {
-color: '#B6A2DE',
+color: '#8F9295',
 lineStyle: {
-color: '#B6A2DE',
+color: '#8F9295',
 width: 2,
 },
 areaStyle: {
@@ -204,9 +204,9 @@ smooth: true,
 type: 'line',
 itemStyle: {
 normal: {
-color: '#5AB1EF',
+color: '#387683',
 lineStyle: {
-color: '#5AB1EF',
+color: '#387683',
 width: 2,
 },
 areaStyle: {

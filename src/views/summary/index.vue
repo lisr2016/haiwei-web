@@ -333,7 +333,7 @@ export default {
     options() {
       const arr = getWeeks()
       if (arr.length) {
-        return arr.map(item => ({ value: item.timestamp, label: `${item.start}到${item.end}` }))
+        return arr.map(item => ({ value: item.timestamp, label: `${item.friday}` }))
       }
       return []
     },

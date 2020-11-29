@@ -33,7 +33,7 @@ const options = [
   { label: '月报', value: '1' },
   { label: '年报', value: '2' },
 ]
-const colors = ['#FF005A', '#3888FA', '#2EC7C9', '#FEB980', '#B6A2DE', '#5AB1EF']
+const colors = ['#37913D', '#F65A4C', '#8F9295', '#FEF336', '#5AB1EF', '#387683']
 
 export default {
   name: 'Dashboard',
@@ -95,6 +95,24 @@ export default {
             type: 'bar',
             barWidth: '10%',
             data,
+              itemStyle: {
+                  //通常情况下：
+                  normal: {
+                      //每个柱子的颜色即为colorList数组里的每一项，如果柱子数目多于colorList的长度，则柱子颜色循环使用该数组
+                      color: function(params) {
+                          console.log(params)
+                          var colorList = [
+                              "#37913D",
+                              "#F65A4C",
+                              "#8F9295",
+                              "#FEF336",
+                              "#5AB1EF",
+                              "#387683",
+                          ]; //每根柱子的颜色
+                          return colorList[params.componentIndex];
+                      }
+                  },
+              }
           }
         })
       } else {
@@ -121,7 +139,7 @@ export default {
           })
           return {
             name: item.value,
-            value: this.sumArr(data),
+            value: this.sumArr(data).toFixed(2),
           }
         })
       } else {
@@ -155,7 +173,7 @@ export default {
     getScreen(params) {
       getSummaryScreen(params).then(res => {
         this.chartData = res.data
-        console.log(res.data)
+        // console.log(res.data)
       })
     },
   },

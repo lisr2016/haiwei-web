@@ -75,7 +75,8 @@ export default {
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }
-        ]
+        ],
+          color: ['rgb(55,145,61)','rgb(246,90,76)','rgb(143,146,149)','rgb(254,243,54)','rgb(90,177,239)','rgb(56,118,131)']
       })
     }
   }
