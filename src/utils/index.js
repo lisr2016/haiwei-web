@@ -164,7 +164,7 @@ export function getWeeks(){
       timestamp: dayjs(startTime).valueOf(),
       start:`${dayjs(startTime).year()}年${dayjs(startTime).month() + 1}月${dayjs(startTime).date()}日`,
       end:`${dayjs(end).year()}年${dayjs(end).month() + 1}月${dayjs(end).date()}日`,
-      friday: `${dayjs(startTime).year()}年${dayjs(startTime).month() + 1}月${dayjs(startTime).add(4, 'day').date()}日`
+      friday: `${dayjs(startTime).add(4, 'day').year()}年${dayjs(startTime).add(4, 'day').month() + 1}月${dayjs(startTime).add(4, 'day').date()}日`
     });
     startTime = dayjs(startTime).add(7, 'day');
 
