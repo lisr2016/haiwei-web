@@ -41,11 +41,6 @@
           <span>{{ scope.row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核内容" min-width="200px" align="center">
-        <template slot-scope="scope">
-          <div v-for="(item, index) in scope.row.content" :key="index" @click="getDetail(scope.row, index)" :class="scope.row.assessorDone || scope.row.assesseeDone ? 'active' : ''">{{ item }}</div>
-        </template>
-      </el-table-column>
       <el-table-column label="考核单位1" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.assessorOrgName }}{{ scope.row.assessorDone ? '(已提交)' : '(未提交)' }}</span>
