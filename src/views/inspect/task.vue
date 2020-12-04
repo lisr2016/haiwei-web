@@ -46,9 +46,19 @@
           <span>{{ scope.row.assessorOrgName }}{{ scope.row.assessorDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="考核单位1得分" align="center" min-width="150px">
+        <template slot-scope="scope">
+          <span :style="{ color: scope.row.assessorContent ? '#409EFF' : '' }" @click="getFractionDetail(scope.row.assessorContent)">{{ scope.row.assessorContent ? getFraction(scope.row.assessorContent) : '' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="考核单位2" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.assesseeOrgName }}{{ scope.row.type === '1'?'':scope.row.assesseeDone ? '(已提交)' : '(未提交)' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="考核单位2得分" align="center" min-width="150px">
+        <template slot-scope="scope">
+          <span :style="{ color: scope.row.assesseeContent ? '#409EFF' : '' }" @click="getFractionDetail(scope.row.assesseeContent)">{{ scope.row.assesseeContent ? getFraction(scope.row.assesseeContent) : '' }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -135,6 +145,25 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="得分详情" :visible.sync="visible" width="80%">
+      <el-table :data="detailList" border fit highlight-current-row>
+        <el-table-column label="题目" align="center" fixed min-width="300px">
+          <template slot-scope="scope">
+            {{ scope.row.text }}
+          </template>
+        </el-table-column>
+        <el-table-column label="作答" align="center" fixed>
+          <template slot-scope="scope">
+            {{ scope.row.value }}
+          </template>
+        </el-table-column>
+        <el-table-column label="图片" align="center" min-width="150px">
+          <template slot-scope="scope">
+            <el-image v-for="(i, k) in scope.row.pics" :key="k" :src="i.url" class="image" :preview-src-list="srcList" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
 
     <el-dialog title="考核项详情" :visible.sync="contentDetailVisible">
       <div v-if="contentDetail && contentDetail.assesseeContent && contentDetail.assesseeContent.length" class="assessee">
@@ -183,7 +212,52 @@
 
 <script>
 import { addTask, deleteTask, getOrgList, getTaskList, getTemplateList } from '@/api/table'
+const mockData = { 
+  'a1': { text: '有垃圾收集设施、日产生垃圾数量等数据的“一本台账”', value: 3 },
+  'a2': { text: '与有资质的收运处置单位签订转运处置协议，交接手续明晰', value: 2 },
+  'a3': { text: '有明确的内部转运时间和路线', value: 2 },
+  'a4': { text: '确保厨余垃圾“日产日清”', value: 3 },
+  'b1': { text: '科学合理布局四类垃圾桶，优化桶站点位', value: 2 },
+  'b2': { text: '有规范标识', value: 2 },
+  'b3': { text: '设备设施尽快落成到位不足的要补足欠缺', value: 1 },
+  'b4': { text: '食品加工区设置厨余垃圾、其他垃圾容器，配置油水分离装置', value: 2 },
+  'b5': { text: '集中用餐区设置厨余垃圾、其他垃圾收集容器', value: 2 },
+  'b6': { text: '职工工作区因地制宜设置厨余垃圾、可回收物、有害垃圾、其他垃圾收集容器', value: 2 },
+  'b7': { text: '门急诊和住院部区域因地制宜设置厨余垃圾、可回收物、有害垃圾、其他垃圾收集容器', value: 2 },
+  'b8': { text: '办公区域内每个办公室设置其他垃圾收集容器，公共区域因地制宜设置、厨余垃圾、可回收物、有害垃圾、其他垃圾收集容器', value: 2 },
+  'b9': { text: '有废旧纸、金属、有害垃圾、大件废弃物品等存储点', value: 2 },
+  'b10': { text: '垃圾桶站有专人值守、引导投放', value: 3 },
+  'c1': { text: '压实主体责任，细化落实1个包干，单位领导责任人职责明确（五类责任各1分）', value: 1 },
+  'c2': { text: '压实主体责任，细化落实1个包干，职能部门责任人职责明确（五类责任各1分）', value: 1 },
+  'c3': { text: '压实主体责任，细化落实1个包干，科（室）责任人职责明确（五类责任各1分）', value: 1 },
+  'c4': { text: '压实主体责任，细化落实1个包干，物业公司责任人职责明确（五类责任各1分）', value: 1 },
+  'c5': { text: '压实主体责任，细化落实1个包干，个人责任人职责明确（五类责任各1分）', value: 1 },
+  'd1': { text: '单位落实党政“一把手”双组长制', value: 1 },
+  'd2': { text: '有明确的工作标准，能够体现“管理精细、数据精准、问题精确”', value: 1 },
+  'd3': { text: '监督管理制度', value: 2 },
+  'd4': { text: '奖评标准和奖惩措施', value: 1 },
+  'e1': { text: '做好一进一出“两桶一袋”进病房', value: 1 },
+  'e2': { text: '医疗废物及时转运出病房', value: 2 },
+  'e3': { text: '管好“一个棉球和一个输液袋”进一步加强医疗废物监管', value: 5 },
+  'e4': { text: '引导患者行为，自觉遵守垃圾分类规定', value: 2 },
+  'e5': { text: '生活垃圾分类桶内无混装混放', value: 5 },
+  'e6': { text: '严禁生活垃圾和医疗废物混装混运', value: 5 },
 
+  'f1': { text: '党建引领有措施：开展“一个支部动员”、党员先锋岗、责任制、志愿服务等工作，发挥党员先锋模范作用', value: 5 },
+  'f2': { text: '公共区域有志愿者参与引导', value: 2 },
+  'f3': { text: '对专职人员和医务工作者有培训', value: 3 },
+
+  'g1': { text: '有科普宣传、政策解读、舆情监测和应对等宣传引导工作，积极培养患者及家属垃圾分类意识行为的形成', value: 3 },
+  'g2': { text: '有针对诊室、病房、食堂等区域垃圾分类的“一张宣传海报”，引导患者逐渐养成垃圾分类的良好习惯', value: 3 },
+  'g3': { text: '医院入口及相关位置贴有1张生活垃圾主要投放点、集中存储点的位置示意图', value: 2 },
+  'g4': { text: '有示范典型部门、科（室）“一个标杆”', value: 2 },
+
+  'h1': { text: '各类垃圾桶整洁，定人定时清洁维护', value: 3 },
+  'h2': { text: '无暴露垃圾', value: 5 },
+  'h3': { text: '桶站张贴生活垃圾分类公示牌', value: 2 },
+  'h4': { text: '单位厨余垃圾、其他垃圾集中存储点有防鼠、防蝇等措施，有大件垃圾集中存放点', value: 5 },
+  'h5': { text: '垃圾桶站设施、设备保持清洁整齐完好', value: 5 },
+}
 export default {
   data() {
     return {
@@ -196,6 +270,7 @@ export default {
       },
       selectList: [],
       total: 0,
+      mockData,
       params: { offset: 1, limit: 10 },
       list: [],
       listLoading: true,
@@ -213,8 +288,10 @@ export default {
         time: '',
       },
       contentDetailVisible: false,
+      visible: false,
       contentDetail: null,
       srcList: [],
+      detailList: [],
     }
   },
   created() {
@@ -239,6 +316,31 @@ export default {
   },
 
   methods: {
+    getFractionDetail(row) {
+      if (row) {
+        this.visible = true
+        this.detailList = []
+        this.srcList = []
+        Object.keys(row).forEach(key => {
+          const { value, text } = this.mockData[key]
+          this.detailList.push({ text, value: row[key].value === '1' ? '是' : '否', pics: row[key].pics })
+          row[key].pics.forEach(item => {
+            this.srcList.push(item.url)
+          })
+        })
+      } else {
+        return
+      }
+    },
+    getFraction(row) {
+      let value = 0
+      Object.keys(row).forEach(key => {
+        if (row[key].value === '1') {
+          value += this.mockData[key].value
+        }
+      })
+      return value
+    },
     deleteRow(id) {
       deleteTask({ taskId: id }).then(() => {
         this.$message({ message: '删除成功', type: 'success' })
@@ -273,32 +375,32 @@ export default {
       })
     },
     getDetail(row, index) {
-      this.srcList = []
-      const { assesseeDone, assessorDone, assessorContent, assesseeContent } = row
-      if (assessorDone || assesseeDone) {
-        this.contentDetailVisible = true
-        this.contentDetail = row
-        console.log(this.contentDetail)
-        if (assessorContent) {
-          assessorContent.forEach(item => {
-            item.urls.forEach(i => {
-              this.srcList.push(i)
-            })
+      // this.srcList = []
+      // const { assesseeDone, assessorDone, assessorContent, assesseeContent } = row
+      // if (assessorDone || assesseeDone) {
+      //   this.contentDetailVisible = true
+      //   this.contentDetail = row
+      //   console.log(this.contentDetail)
+      //   if (assessorContent) {
+      //     assessorContent.forEach(item => {
+      //       item.urls.forEach(i => {
+      //         this.srcList.push(i)
+      //       })
 
-          })
-        }
-        if (assesseeContent) {
-          assesseeContent.forEach(item => {
-            item.urls.forEach(i => {
-              this.srcList.push(i)
-            })
+      //     })
+      //   }
+      //   if (assesseeContent) {
+      //     assesseeContent.forEach(item => {
+      //       item.urls.forEach(i => {
+      //         this.srcList.push(i)
+      //       })
 
-          })
-        }
+      //     })
+      //   }
 
-      } else {
-        return false
-      }
+      // } else {
+      //   return false
+      // }
     },
     handleSizeChange(val) {
       this.params.limit = val
