@@ -47,22 +47,22 @@
           <span>{{ scope.row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位名称" align="center" min-width="150px">
+      <el-table-column label="单位名称" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.assessorOrgName }}{{ scope.row.assessorDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核总评分分" align="center" min-width="150px">
+      <el-table-column label="考核评分" align="center" min-width="150px">
         <template slot-scope="scope">
           <span :style="{ color: scope.row.assessorContent ? '#409EFF' : '' }" @click="getFractionDetail(scope.row.assessorContent)">{{ scope.row.assessorContent ? getFraction(scope.row.assessorContent) : '' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位名称" align="center" min-width="150px">
+      <el-table-column label="单位名称" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.assesseeOrgName }}{{ scope.row.type === '1'?'':scope.row.assesseeDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核总评分分" align="center" min-width="150px">
+      <el-table-column label="考核评分" align="center" min-width="150px">
         <template slot-scope="scope">
           <span :style="{ color: scope.row.assesseeContent ? '#409EFF' : '' }" @click="getFractionDetail(scope.row.assesseeContent)">{{ scope.row.assesseeContent ? getFraction(scope.row.assesseeContent) : '' }}</span>
         </template>
