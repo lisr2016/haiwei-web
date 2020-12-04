@@ -47,22 +47,22 @@
           <span>{{ scope.row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位1" align="center" min-width="150px">
+      <el-table-column label="单位名称" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.assessorOrgName }}{{ scope.row.assessorDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位1得分" align="center" min-width="150px">
+      <el-table-column label="考核评分" align="center" min-width="150px">
         <template slot-scope="scope">
           <span :style="{ color: scope.row.assessorContent ? '#409EFF' : '' }" @click="getFractionDetail(scope.row.assessorContent)">{{ scope.row.assessorContent ? getFraction(scope.row.assessorContent) : '' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位2" align="center" min-width="150px">
+      <el-table-column label="单位名称" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.assesseeOrgName }}{{ scope.row.type === '1'?'':scope.row.assesseeDone ? '(已提交)' : '(未提交)' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考核单位2得分" align="center" min-width="150px">
+      <el-table-column label="考核评分" align="center" min-width="150px">
         <template slot-scope="scope">
           <span :style="{ color: scope.row.assesseeContent ? '#409EFF' : '' }" @click="getFractionDetail(scope.row.assesseeContent)">{{ scope.row.assesseeContent ? getFraction(scope.row.assesseeContent) : '' }}</span>
         </template>
@@ -153,17 +153,17 @@
 
     <el-dialog :title="`考评内容(${getFraction(row)}分)`" :visible.sync="visible" width="80%">
       <el-table :data="detailList" border fit :row-class-name="tableRowClassName">
-        <el-table-column label="题目" align="center" fixed min-width="300px">
+        <el-table-column label="考核项" align="center" fixed min-width="300px">
           <template slot-scope="scope">
             {{ scope.row.text }}
           </template>
         </el-table-column>
-        <el-table-column label="作答" align="center" fixed>
+        <el-table-column label="考核结果" align="center" fixed>
           <template slot-scope="scope">
             {{ scope.row.value }}
           </template>
         </el-table-column>
-        <el-table-column label="图片" align="center" min-width="150px">
+        <el-table-column label="上传图片" align="center" min-width="150px">
           <template slot-scope="scope">
             <el-image v-for="(i, k) in scope.row.pics" :key="k" :src="i.url" class="image" :preview-src-list="srcList" />
           </template>
@@ -218,7 +218,7 @@
 
 <script>
 import { addTask, deleteTask, getOrgList, getTaskList, getTemplateList } from '@/api/table'
-const mockData = { 
+const mockData = {
   'a1': { text: '有垃圾收集设施、日产生垃圾数量等数据的“一本台账”', value: 3, type: '1' },
   'a2': { text: '与有资质的收运处置单位签订转运处置协议，交接手续明晰', value: 2, type: '1' },
   'a3': { text: '有明确的内部转运时间和路线', value: 2, type: '1' },
@@ -489,26 +489,26 @@ export default {
   }
 
   .el-table .row-c {
-    background: #FF7496;
+    background: oldlace;
   }
 
   .el-table .row-d {
-    background: #D8FF46;
+    background: #f0f9eb;
   }
 
   .el-table .row-e {
-    background: #71FFC9;
+    background: oldlace;
   }
 
   .el-table .row-f {
-    background: #70FF1D;
+    background: #f0f9eb;
   }
 
   .el-table .row-g {
-    background: #7FF2FF;
+    background: oldlace;
   }
 
   .el-table .row-h {
-    background: #FFA33E;
+    background: #f0f9eb;
   }
 </style>
