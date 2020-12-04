@@ -3,7 +3,7 @@
     <div class="search-box">
       <el-button @click="dialogFormVisible = true">新增考核任务</el-button>
       <div class="right">
-        <el-select v-model="params.organizationId" filterable remote reserve-keyword placeholder="请输入关键词搜索机构" :loading="loading" :remote-method="remoteMethod">
+        <el-select v-model="params.organizationId" filterable clearable remote reserve-keyword placeholder="请输入关键词搜索机构" :loading="loading" :remote-method="remoteMethod">
           <el-option v-for="item in selectList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <el-button @click="fetchData">查找</el-button>
@@ -151,7 +151,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="得分详情" :visible.sync="visible" width="80%">
+    <el-dialog :title="`考评内容(${getFraction(row)}分)`" :visible.sync="visible" width="80%">
       <el-table :data="detailList" border fit :row-class-name="tableRowClassName">
         <el-table-column label="题目" align="center" fixed min-width="300px">
           <template slot-scope="scope">
@@ -298,6 +298,7 @@ export default {
       contentDetail: null,
       srcList: [],
       detailList: [],
+      row: {}
     }
   },
   created() {
@@ -327,6 +328,7 @@ export default {
     },
     getFractionDetail(row) {
       if (row) {
+        this.row = row
         this.visible = true
         this.detailList = []
         this.srcList = []
