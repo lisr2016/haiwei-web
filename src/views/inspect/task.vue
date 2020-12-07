@@ -189,9 +189,15 @@
         <!--            </el-option>-->
         <!--          </el-select>-->
         <!--        </el-form-item>-->
-        <el-form-item label="考核单位" label-width="120px" prop="assessorId">
+        <el-form-item
+          v-if="!form.level"
+          label="考核单位"
+          label-width="120px"
+          prop="assessorId"
+        >
           <el-select
             v-model="form.assessorId"
+            clearable
             style="width: 100%;"
             filterable
             remote
@@ -205,6 +211,25 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="!form.assessorId && form.type === '1'"
+          label="级别:"
+          label-width="120px"
+          prop="level"
+        >
+          <el-select
+            v-model="form.level"
+            clearable
+            placeholder="请选择用户级别"
+          >
+            <el-option
+              v-for="(item, index) in levelValues"
+              :key="index"
+              :label="item"
+              :value="String(index + 1)"
             />
           </el-select>
         </el-form-item>
@@ -231,6 +256,10 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item
+          v-if="form.type === '1'"
+          label="注：选择级别即该级别下所有机构"
+        />
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -491,6 +520,19 @@ const mockData = {
   },
   h5: { text: "垃圾桶站设施、设备保持清洁整齐完好", value: 5, type: "" }
 };
+const levelValues = [
+  "三级医院",
+  "二级医院",
+  "一级医院",
+  "门诊部",
+  "诊所",
+  "未定级",
+  "医务室",
+  "卫生室",
+  "社区卫生服务中心（区属）",
+  "社区卫生服务中心（非区属）",
+  "社区卫生服务站"
+];
 export default {
   data() {
     return {
@@ -516,6 +558,7 @@ export default {
       dialogFormVisible: false,
       editVisible: false,
       loading: false,
+      levelValues,
       form: {
         type: "1",
         name: "",
@@ -524,7 +567,8 @@ export default {
         target: "",
         assessorId: "",
         assesseeId: "",
-        time: ""
+        time: "",
+        level: ""
       },
       contentDetailVisible: false,
       visible: false,
