@@ -71,4 +71,12 @@ export function getSummaryScreen(data) {
   })
 }
 
+export function getSummaryData(data) {
+  return request({
+    url: '/cms/summary/data',
+    method: 'post',
+    data
+  })
+}
+
 

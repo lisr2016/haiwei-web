@@ -66,7 +66,7 @@
     <el-dialog title="报告详情" :visible.sync="visible_two">
       报告详情：
       <el-table-column v-if="type === '1'" align="center" width="300px">
-        宣传方式:{{orgDetail.advertise_content}}
+        宣传方式:{{ orgDetail.advertise_content }}
       </el-table-column>
       <el-table-column v-if="type === '1'" align="center" width="300px">
         宣传次数:{{orgDetail.advertise_times}}
@@ -207,7 +207,7 @@
 </template>
 
 <script>
-import { getDomesticDaily, getDomesticMonthly, getDomesticWeekly, getMedicMonthly, getSummaryTotal, getBarrelMonthly, getReportSubmitted, getReportDetail } from '@/api/summary'
+import { getDomesticDaily, getDomesticMonthly, getDomesticWeekly, getMedicMonthly, getSummaryTotal, getBarrelMonthly, getReportSubmitted, getReportDetail, getSummaryData } from '@/api/summary'
 import { getWeeks } from '@/utils'
 import {saveAs} from 'file-saver'
 import ExcelTable from '@/utils/tableUtil'
@@ -248,82 +248,82 @@ export default {
   computed: {
     list() {
       return [
-        { title: '生活垃圾分类管理工作会议', child: [{ label: '开展生活垃圾分类管理工作会议次数', id: 'meetingTimes', unit: '次' }], show: this.active === '0' },
+        { title: '生活垃圾分类管理工作会议', child: [{ label: '开展生活垃圾分类管理工作会议次数', id: 'meetingTimes', unit: '次', value: 'meeting_times' }], show: this.active === '0' },
         {
           title: '生活垃圾分类管理',
           child: [
-            { label: '自测、巡查次数', id: 'selfInspectionTimes', unit: '次' },
-            { label: '发现存在问题', id: 'selfInspectionProblems', unit: '个' },
+            { label: '自测、巡查次数', id: 'selfInspectionTimes', value: 'self_inspection_times', unit: '次' },
+            { label: '发现存在问题', id: 'selfInspectionProblems', value: 'self_inspection_problems', unit: '个' },
           ],
           show: this.active === '0',
         },
-        { title: '生活垃圾分类宣传', child: [{ label: '宣传次数', id: 'advertiseTimes', unit: '次' }], show: this.active === '0' },
+        { title: '生活垃圾分类宣传', child: [{ label: '宣传次数', id: 'advertiseTimes', unit: '次', value: 'advertise_times' }], show: this.active === '0' },
         {
           title: '生活垃圾分类培训',
           child: [
-            { label: '培训人数', id: 'trainees', unit: '人' },
-            { label: '培训次数', id: 'traningTimes', unit: '次' },
+            { label: '培训人数', id: 'trainees', unit: '人', value: 'trainees' },
+            { label: '培训次数', id: 'traningTimes', unit: '次', value: 'traning_times' },
           ],
           show: this.active === '0',
         },
         {
           title: '配合相关部门、属地政府进行检查',
           child: [
-            { label: '开展检查次数', id: 'govInspectionTimes', unit: '次' },
-            { label: '发现存在问题个数', id: 'govInspectionProblems', unit: '个' },
+            { label: '开展检查次数', id: 'govInspectionTimes', unit: '次', value: 'gov_inspection_times' },
+            { label: '发现存在问题个数', id: 'govInspectionProblems', unit: '个', value: 'gov_inspection_problems' },
           ],
           show: this.active === '0',
         },
         {
           title: '专兼职人员',
           child: [
-            { label: '专兼职收运人员', id: 'consignee', unit: '人' },
-            { label: '专兼职看守引导人员', id: 'guide', unit: '人' },
-            { label: '专兼职监督检查人员', id: 'inspector', unit: '人' },
+            { label: '专兼职收运人员', id: 'consignee', unit: '人', value: 'consignee' },
+            { label: '专兼职看守引导人员', id: 'guide', unit: '人', value: 'guide' },
+            { label: '专兼职监督检查人员', id: 'inspector', unit: '人', value: 'inspector' },
           ],
           show: this.active === '1',
         },
         {
           title: '收集设施设备配置',
           child: [
-            { label: '厨余垃圾收集容器', id: 'kitchenWasteCollectors', unit: '个' },
-            { label: '厨余垃圾收集存放处', id: 'kitchenWastePositons', unit: '处' },
-            { label: '可回收垃圾收集容器', id: 'recyclableWasteCollectors', unit: '个' },
-            { label: '可回收垃圾收集存放处', id: 'recyclableWastePositons', unit: '处' },
-            { label: '有害垃圾收集容器', id: 'harmfulWasteCollectors', unit: '个' },
-            { label: '有害垃圾收集存放处', id: 'harmfulWastePositons', unit: '处' },
-            { label: '其他垃圾收集容器', id: 'otherWastePositons', unit: '个' },
-            { label: '其他垃圾收集存放处', id: 'otherWastePositons', unit: '处' },
-            { label: '医疗垃圾收集容器', id: 'medicWasteCollectors', unit: '个' },
-            { label: '医疗垃圾收集存放处', id: 'medicWastePositons', unit: '处' },
-            { label: '大件垃圾存放处', id: 'bulkyWastePositons', unit: '处' },
+            { label: '厨余垃圾收集容器', id: 'kitchenWasteCollectors', unit: '个', value: 'kitchen_waste_collectors' },
+            { label: '厨余垃圾收集存放处', id: 'kitchenWastePositons', unit: '处', value: 'kitchen_waste_positons' },
+            { label: '可回收垃圾收集容器', id: 'recyclableWasteCollectors', unit: '个', value: 'recyclable_waste_collectors' },
+            { label: '可回收垃圾收集存放处', id: 'recyclableWastePositons', unit: '处', value: 'recyclable_waste_positons' },
+            { label: '有害垃圾收集容器', id: 'harmfulWasteCollectors', unit: '个', value: 'harmful_waste_collectors' },
+            { label: '有害垃圾收集存放处', id: 'harmfulWastePositons', unit: '处', value: 'harmful_waste_positons' },
+            { label: '其他垃圾收集容器', id: 'otherWastePositons', unit: '个', value: 'other_waste_collectors' },
+            { label: '其他垃圾收集存放处', id: 'otherWastePositons', unit: '处', value: 'other_waste_positons' },
+            { label: '医疗垃圾收集容器', id: 'medicWasteCollectors', unit: '个', value: 'medic_waste_collectors' },
+            { label: '医疗垃圾收集存放处', id: 'medicWastePositons', unit: '处', value: 'medic_waste_positons' },
+            { label: '大件垃圾存放处', id: 'bulkyWastePositons', unit: '处', value: 'bulky_waste_positons' },
           ],
           show: this.active === '1',
         },
         {
           title: '垃圾收集情况',
           child: [
-            { label: '厨余垃圾', id: 'kitchenWaste', unit: '千克' },
-            { label: '可回收物', id: 'recyclableWaste', unit: '千克' },
-            { label: '有害垃圾', id: 'harmfulWaste', unit: '千克' },
-            { label: '医疗垃圾', id: 'medicWaste', unit: '千克' },
-            { label: '其他垃圾', id: 'otherWaste', unit: '千克' },
+            { label: '厨余垃圾', id: 'kitchenWaste', unit: '千克', value: 'kitchen_waste' },
+            { label: '可回收物', id: 'recyclableWaste', unit: '千克', value: 'recyclable_waste' },
+            { label: '有害垃圾', id: 'harmfulWaste', unit: '千克', value: 'harmful_waste' },
+            { label: '医疗垃圾', id: 'medicWaste', unit: '千克', value: 'medic_waste' },
+            { label: '其他垃圾', id: 'otherWaste', unit: '千克', value: 'other_waste' },
           ],
           show: this.active === '1',
         },
         {
           title: '生活垃圾月报汇总',
           child: [
-            { label: '厨余垃圾', id: 'kitchenWaste', unit: '千克' },
-            { label: '可回收物', id: 'recyclableWaste', unit: '千克' },
-            { label: '有害垃圾', id: 'harmfulWaste', unit: '千克' },
-            { label: '大件垃圾', id: 'bulkyWaste', unit: '千克' },
-            { label: '其他垃圾', id: 'otherWaste', unit: '千克' },
+            { label: '厨余垃圾', id: 'kitchenWaste', unit: '千克', value: 'kitchen_waste' },
+            { label: '可回收物', id: 'recyclableWaste', unit: '千克', value: 'recyclable_waste' },
+            { label: '有害垃圾', id: 'harmfulWaste', unit: '千克', value: 'harmful_waste' },
+            { label: '大件垃圾', id: 'bulkyWaste', unit: '千克', value: 'bulky_waste' },
+            { label: '其他垃圾', id: 'otherWaste', unit: '千克', value: 'other_waste' },
           ],
           show: this.active === '2',
         },
-        { title: '医疗垃圾月报', child: [{ label: '医疗垃圾月产量', id: 'totalWeight', unit: '千克' }], show: this.active === '3' },
-        { title: '桶前值守月报', child: [{ label: '桶前值守人数', id: 'personCountOnDuty', unit: '人' }], show: this.active === '4' },
+        { title: '医疗垃圾月报', child: [{ label: '医疗垃圾月产量', id: 'totalWeight', unit: '千克', value: 'total_weight' }], show: this.active === '3' },
+        { title: '桶前值守月报', child: [{ label: '桶前值守人数', id: 'personCountOnDuty', unit: '人', value: 'person_count_on_duty' }], show: this.active === '4' },
       ].filter(item => item.show)
     },
     num() {
@@ -344,23 +344,23 @@ export default {
         return 0
       }
     },
-    downloadData() {
-      if (!this.list.length) return []
-      const header = [
-        { label: `${_.get(this.card, `${this.active}.label`)}处置情况报告`, minWidth: '320', prop: 'label' },
-        { label: '数量', minWidth: '220', prop: 'num' },
-        { label: '备注', minWidth: '220', prop: 'desc' },
-      ]
-      const data = []
-      this.list.forEach(item => {
-        item.child.forEach(i => {
-          data.push({ label: i.label, num: this.cardData[i.id] })
-        })
-      })
-      const total = this.add(data)
-      data.push({ label: '总计', num: total })
-      return [{ header, data }]
-    }
+  //   downloadData() {
+  //     if (!this.list.length) return []
+  //     const header = [
+  //       { label: `${_.get(this.card, `${this.active}.label`)}处置情况报告`, minWidth: '320', prop: 'label' },
+  //       { label: '数量', minWidth: '220', prop: 'num' },
+  //       { label: '备注', minWidth: '220', prop: 'desc' },
+  //     ]
+  //     const data = []
+  //     this.list.forEach(item => {
+  //       item.child.forEach(i => {
+  //         data.push({ label: i.label, num: this.cardData[i.id] })
+  //       })
+  //     })
+  //     const total = this.add(data)
+  //     data.push({ label: '总计', num: total })
+  //     return [{ header, data }]
+  //   }
   },
   async created() {
     this.Excel = await import(/* webpackChunkName: "exceljs" */'exceljs')
@@ -447,6 +447,27 @@ export default {
         })
     },
     async download() {
+      const header = [
+        { label: '序号', width: '120', prop: 'num' },
+        { label: '机构名称', width: '120', prop: 'name' },
+        { label: '联系方式', width: '120', prop: 'concact_phone' },
+      ]
+      const data = []
+      const ummaryData = await getSummaryData({ time: this.startTime, level: this.level, type: String(Number(this.active) + 1) })
+      this.list.forEach(item => {
+        item.child.forEach(i => {
+          header.push({ label: i.label, minWidth: '140', prop: i.value })
+        })
+      })
+      ummaryData.data.forEach((item, index) => {
+        const result = { num: Number(index) + 1 }
+        header.forEach(i => {
+          if (i.prop !== 'num') {
+            result[i.prop] = item[i.prop]
+           }
+        })
+        data.push(result)
+      })
       // demo 数据格式
       // const header = [
       //   { label: '姓名', width: '120', prop: 'name' },
@@ -460,7 +481,7 @@ export default {
       //   { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
       //   { name: 'lxx', age: 18, tel: '15093408313', high: 178 },
       // ]
-      await this.makeExcel(this.downloadData, _.get(this.card, `${this.active}.label`))
+      await this.makeExcel([{ header, data }], _.get(this.card, `${this.active}.label`))
       this.$message.success('下载成功！')
     },
     async makeExcel(downloadData, name) {
