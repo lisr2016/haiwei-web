@@ -190,7 +190,7 @@
         <!--          </el-select>-->
         <!--        </el-form-item>-->
         <el-form-item
-          v-if="!form.level"
+          v-if="!form.levels.length"
           label="考核单位"
           label-width="120px"
           prop="assessorId"
@@ -221,8 +221,9 @@
           prop="level"
         >
           <el-select
-            v-model="form.level"
+            v-model="form.levels"
             clearable
+            multiple
             placeholder="请选择用户级别"
           >
             <el-option
@@ -568,7 +569,7 @@ export default {
         assessorId: "",
         assesseeId: "",
         time: "",
-        level: ""
+        levels: []
       },
       contentDetailVisible: false,
       visible: false,
@@ -667,6 +668,9 @@ export default {
             this.form,
             this.form.type === "1" ? ["time", "assesseeId"] : "time"
           );
+          if (params.levels) {
+            params.levels = params.levels.join(',')
+          }
           await addTask(params);
           this.$message({ message: "添加成功", type: "success" });
           this.fetchData();
