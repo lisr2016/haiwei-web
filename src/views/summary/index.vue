@@ -448,8 +448,8 @@ export default {
     },
     async download() {
       const header = [
-        { label: '序号', width: '120', prop: 'num' },
-        { label: '机构名称', width: '120', prop: 'name' },
+        { label: '序号', width: '32', prop: 'num' },
+        { label: '机构名称', width: '240', prop: 'name' },
         { label: '联系方式', width: '120', prop: 'concact_phone' },
       ]
       const data = []
